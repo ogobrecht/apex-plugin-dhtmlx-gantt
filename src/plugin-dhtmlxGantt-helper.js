@@ -1,58 +1,59 @@
-window.plugin = window.plugin || {};
-plugin.dhtmlxGantt = {};
-plugin.dhtmlxGantt.version = "0.1.0";
+window.plugin_dhtmlxGantt = {};
+plugin_dhtmlxGantt.version = "0.1.0";
 
-plugin.dhtmlxGantt.init = function() {
+plugin_dhtmlxGantt.init = function() {
     //create jQuery objects for region ID and chart container ID
-    plugin.dhtmlxGantt.regionIdElement = apex.jQuery("#" + plugin.dhtmlxGantt.regionId);
-    plugin.dhtmlxGantt.chartContainerIdElement = apex.jQuery("#" + plugin.dhtmlxGantt.chartContainerId);
+    plugin_dhtmlxGantt.regionIdElement = apex.jQuery("#" + plugin_dhtmlxGantt.regionId);
+    plugin_dhtmlxGantt.chartContainerIdElement = apex.jQuery("#" + plugin_dhtmlxGantt.chartContainerId);
     //register apexrefresh event
-    plugin.dhtmlxGantt.regionIdElement.bind("apexrefresh", function() {
-        plugin.dhtmlxGantt.load();
+    plugin_dhtmlxGantt.regionIdElement.bind("apexrefresh", function() {
+        plugin_dhtmlxGantt.load();
     });
     //normalize apexPageItemsToSubmit from string to array
-    plugin.dhtmlxGantt.pageItemsToSubmit = (
-        plugin.dhtmlxGantt.pageItemsToSubmit === "" ?
+    plugin_dhtmlxGantt.pageItemsToSubmit = (
+        plugin_dhtmlxGantt.pageItemsToSubmit === "" ?
         false :
-        plugin.dhtmlxGantt.pageItemsToSubmit.replace(/\s/g, "").split(",")
+        plugin_dhtmlxGantt.pageItemsToSubmit.replace(/\s/g, "").split(",")
     );
     //catch edit event for APEX, so that a custom APEX form can be opened by double clicking a task
     gantt.attachEvent("onBeforeLightbox", function(id) {
-        apex.event.trigger(plugin.dhtmlxGantt.chartContainerIdElement, "dhtmlx_task_double_click", id);
+        apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlx_task_double_click", {
+            "id": id
+        });
         return false; //this prevents the default Gantt edit popup
     });
     //load initial data
-    plugin.dhtmlxGantt.load();
+    plugin_dhtmlxGantt.load();
 };
 
-plugin.dhtmlxGantt.load = function(data) {
+plugin_dhtmlxGantt.load = function(data) {
     //trigger event, so that other dynamic actions registered on this event are called
-    apex.event.trigger(plugin.dhtmlxGantt.regionIdElement, "apexbeforerefresh");
+    apex.event.trigger(plugin_dhtmlxGantt.regionIdElement, "apexbeforerefresh");
     //if data is provided (from anywhere) we save it and start the parsing
     if (data) {
-        plugin.dhtmlxGantt.dataRaw = data;
-        plugin.dhtmlxGantt.parse();
+        plugin_dhtmlxGantt.dataRaw = data;
+        plugin_dhtmlxGantt.parse();
     }
     //without provided data...
     else {
         //...get new data from db via AJAX call...
-        if (plugin.dhtmlxGantt.queryDefined) {
+        if (plugin_dhtmlxGantt.queryDefined) {
             apex.server.plugin(
-                plugin.dhtmlxGantt.pluginId, {
+                plugin_dhtmlxGantt.pluginId, {
                     p_debug: $v("pdebug"),
-                    pageItems: plugin.dhtmlxGantt.pageItems
+                    pageItems: plugin_dhtmlxGantt.pageItems
                 }, {
-                    //refreshObject: plugin.dhtmlxGantt.regionIdElement,
-                    loadingIndicator: plugin.dhtmlxGantt.chartContainerIdElement,
+                    //refreshObject: plugin_dhtmlxGantt.regionIdElement,
+                    loadingIndicator: plugin_dhtmlxGantt.chartContainerIdElement,
                     success: function(dataString) {
-                        plugin.dhtmlxGantt.dataRaw = dataString;
+                        plugin_dhtmlxGantt.dataRaw = dataString;
                         //data from query is allowed to be XML or JSON, so we have to parse it first here
-                        plugin.dhtmlxGantt.parse();
+                        plugin_dhtmlxGantt.parse();
                     },
                     error: function(xhr, status, errorThrown) {
-                        plugin.dhtmlxGantt.util_logError("Unable to load data - message from jQuery AJAX call: " + xhr.responseText);
+                        plugin_dhtmlxGantt.util_logError("Unable to load data - message from jQuery AJAX call: " + xhr.responseText);
                         //trigger event, so that other dynamic actions registered on this event are called
-                        apex.event.trigger(plugin.dhtmlxGantt.regionIdElement, "apexafterrefresh");
+                        apex.event.trigger(plugin_dhtmlxGantt.regionIdElement, "apexafterrefresh");
                     },
                     dataType: "text"
                 }
@@ -60,7 +61,7 @@ plugin.dhtmlxGantt.load = function(data) {
         }
         //...or provide example data
         else {
-            plugin.dhtmlxGantt.dataParsed = {
+            plugin_dhtmlxGantt.dataParsed = {
                 "data": [{
                         "id": 1,
                         "text": "Project #1 (NO REGION QUERY DEFINED: EXAMPLE DATA USED)",
@@ -147,68 +148,68 @@ plugin.dhtmlxGantt.load = function(data) {
                     }
                 ]
             };
-            plugin.dhtmlxGantt.render();
+            plugin_dhtmlxGantt.render();
         }
     }
 };
 
-plugin.dhtmlxGantt.parse = function(data) {
+plugin_dhtmlxGantt.parse = function(data) {
     if (data) {
-        plugin.dhtmlxGantt.dataRaw = data;
+        plugin_dhtmlxGantt.dataRaw = data;
     }
     // data is an object
-    if (plugin.dhtmlxGantt.dataRaw.constructor === Object) {
-        plugin.dhtmlxGantt.dataParsed = plugin.dhtmlxGantt.dataRaw;
-        plugin.dhtmlxGantt.render();
+    if (plugin_dhtmlxGantt.dataRaw.constructor === Object) {
+        plugin_dhtmlxGantt.dataParsed = plugin_dhtmlxGantt.dataRaw;
+        plugin_dhtmlxGantt.render();
     }
     // data is a string
-    else if (plugin.dhtmlxGantt.dataRaw.constructor === String) {
+    else if (plugin_dhtmlxGantt.dataRaw.constructor === String) {
         // convert incoming data depending on type
-        if (plugin.dhtmlxGantt.dataRaw.trim().substr(0, 1) === "<") {
+        if (plugin_dhtmlxGantt.dataRaw.trim().substr(0, 1) === "<") {
             try {
-                plugin.dhtmlxGantt.dataParsed = plugin.dhtmlxGantt.util_xml2json(plugin.dhtmlxGantt.util_parseXml(plugin.dhtmlxGantt.dataRaw));
+                plugin_dhtmlxGantt.dataParsed = plugin_dhtmlxGantt.util_xml2json(plugin_dhtmlxGantt.util_parseXml(plugin_dhtmlxGantt.dataRaw));
             } catch (e) {
-                plugin.dhtmlxGantt.util_logError("Unable to parse XML string: " + e.message);
+                plugin_dhtmlxGantt.util_logError("Unable to parse XML string: " + e.message);
             }
-            if (plugin.dhtmlxGantt.dataParsed === null) {
-                plugin.dhtmlxGantt.util_logError("Unable to parse XML string");
+            if (plugin_dhtmlxGantt.dataParsed === null) {
+                plugin_dhtmlxGantt.util_logError("Unable to parse XML string");
             } else {
-                plugin.dhtmlxGantt.render();
+                plugin_dhtmlxGantt.render();
             }
-        } else if (plugin.dhtmlxGantt.dataRaw.trim().substr(0, 1) === "{") {
+        } else if (plugin_dhtmlxGantt.dataRaw.trim().substr(0, 1) === "{") {
             try {
-                plugin.dhtmlxGantt.dataParsed = JSON.parse(plugin.dhtmlxGantt.dataRaw);
+                plugin_dhtmlxGantt.dataParsed = JSON.parse(plugin_dhtmlxGantt.dataRaw);
             } catch (e) {
-                plugin.dhtmlxGantt.util_logError("Unable to parse JSON string - please check for valid JSON before use here in plugin (e.g. https://jsonformatter.curiousconcept.com): " + e.message);
+                plugin_dhtmlxGantt.util_logError("Unable to parse JSON string - please check for valid JSON before use here in plugin (e.g. https://jsonformatter.curiousconcept.com): " + e.message);
             }
-            plugin.dhtmlxGantt.render();
+            plugin_dhtmlxGantt.render();
         } else {
-            plugin.dhtmlxGantt.util_logError("Your data string is not starting with \"<\" or \"{\" - parsing not possible");
+            plugin_dhtmlxGantt.util_logError("Your data string is not starting with \"<\" or \"{\" - parsing not possible");
         }
     }
     // data has unknown format
     else {
-        plugin.dhtmlxGantt.util_logError("Unable to parse your data - input data can be a XML string, JSON string or JavaScript object.");
+        plugin_dhtmlxGantt.util_logError("Unable to parse your data - input data can be a XML string, JSON string or JavaScript object.");
     }
 };
 
-plugin.dhtmlxGantt.render = function() {
+plugin_dhtmlxGantt.render = function() {
     //correct data structure: we allow the name "tasks" instead of "data" (feels more natural), the vendor library needs to have a "data" attribute:
-    if (!plugin.dhtmlxGantt.dataParsed.data && plugin.dhtmlxGantt.dataParsed.tasks) {
-        plugin.dhtmlxGantt.dataParsed.data = plugin.dhtmlxGantt.dataParsed.tasks;
+    if (!plugin_dhtmlxGantt.dataParsed.data && plugin_dhtmlxGantt.dataParsed.tasks) {
+        plugin_dhtmlxGantt.dataParsed.data = plugin_dhtmlxGantt.dataParsed.tasks;
     }
     //push data into gantt chart
     try {
-        gantt.parse(plugin.dhtmlxGantt.dataParsed);
+        gantt.parse(plugin_dhtmlxGantt.dataParsed);
     } catch (e) {
-        plugin.dhtmlxGantt.util_logError("vendor base library was unable to use your data: " + e.message);
+        plugin_dhtmlxGantt.util_logError("vendor base library was unable to use your data: " + e.message);
     }
     //trigger event, so that other dynamic actions registered on this event are called
-    apex.event.trigger(plugin.dhtmlxGantt.regionIdElement, "apexafterrefresh");
+    apex.event.trigger(plugin_dhtmlxGantt.regionIdElement, "apexafterrefresh");
 };
 
 // parse XML string to XML
-plugin.dhtmlxGantt.util_parseXml = function(xml) {
+plugin_dhtmlxGantt.util_parseXml = function(xml) {
     var dom = null;
     if (xml) {
         if (window.DOMParser) {
@@ -216,7 +217,7 @@ plugin.dhtmlxGantt.util_parseXml = function(xml) {
                 dom = (new DOMParser()).parseFromString(xml, "text/xml");
             } catch (e) {
                 dom = null;
-                plugin.dhtmlxGantt.util_logError("DOMParser - unable to parse XML: " + e.message);
+                plugin_dhtmlxGantt.util_logError("DOMParser - unable to parse XML: " + e.message);
             }
         } else if (window.ActiveXObject) {
             try {
@@ -224,19 +225,19 @@ plugin.dhtmlxGantt.util_parseXml = function(xml) {
                 dom.async = false;
                 // parse error ...
                 if (!dom.loadXML(xml)) {
-                    plugin.dhtmlxGantt.util_logError("Microsoft.XMLDOM - unable to parse XML: " + dom.parseError.reason +
+                    plugin_dhtmlxGantt.util_logError("Microsoft.XMLDOM - unable to parse XML: " + dom.parseError.reason +
                         dom.parseError.srcText);
                 }
             } catch (e) {
                 dom = null;
-                plugin.dhtmlxGantt.util_logError("Microsoft.XMLDOM - unable to parse XML: " + e.message);
+                plugin_dhtmlxGantt.util_logError("Microsoft.XMLDOM - unable to parse XML: " + e.message);
             }
         }
     }
     return dom;
 };
 
-plugin.dhtmlxGantt.util_xml2json = function(xml) {
+plugin_dhtmlxGantt.util_xml2json = function(xml) {
     var obj = null,
         subobj, item, subItem, nodeName, attribute;
     //helper
@@ -282,7 +283,7 @@ plugin.dhtmlxGantt.util_xml2json = function(xml) {
     return obj;
 };
 
-plugin.dhtmlxGantt.util_logError = function(message) {
+plugin_dhtmlxGantt.util_logError = function(message) {
     console.error("Plugin dhtmlxGantt: " + message);
     gantt.message({
         type: "error",

@@ -1,5 +1,3 @@
--- drop table plugin_gantt_demo_links purge;
--- drop table plugin_gantt_demo_tasks purge;
 CREATE TABLE plugin_gantt_demo_tasks (
     t_id            NUMBER NOT NULL PRIMARY KEY,
     t_text          VARCHAR2(255 CHAR) NOT NULL,

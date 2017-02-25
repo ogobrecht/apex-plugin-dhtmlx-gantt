@@ -10,13 +10,13 @@ BEGIN
     v_chart_container := v_region_id || '_dhtmlxGantt';
     htp.p( '<div id="'|| v_chart_container || '" style="height:500px;"></div>' );
     apex_javascript.add_onload_code( '
-plugin.dhtmlxGantt.pluginId = "' || apex_plugin.get_ajax_identifier || '";
-plugin.dhtmlxGantt.regionId = "' || v_region_id || '";
-plugin.dhtmlxGantt.chartContainerId = "' || v_chart_container || '";
-plugin.dhtmlxGantt.pageItemsToSubmit = "' || p_region.ajax_items_to_submit || '";
-plugin.dhtmlxGantt.queryDefined = ' || case when p_region.source is null then 'false' else 'true' end || ';
+plugin_dhtmlxGantt.pluginId = "' || apex_plugin.get_ajax_identifier || '";
+plugin_dhtmlxGantt.regionId = "' || v_region_id || '";
+plugin_dhtmlxGantt.chartContainerId = "' || v_chart_container || '";
+plugin_dhtmlxGantt.pageItemsToSubmit = "' || p_region.ajax_items_to_submit || '";
+plugin_dhtmlxGantt.queryDefined = ' || case when p_region.source is null then 'false' else 'true' end || ';
 gantt.init("' || v_chart_container || '");
-plugin.dhtmlxGantt.init();
+plugin_dhtmlxGantt.init();
 ');
     RETURN NULL;
     --
@@ -33,7 +33,7 @@ BEGIN
    IF p_region.source IS NOT NULL THEN
       v_binds := wwv_flow_utilities.get_binds( p_region.source );
       v_cur   := DBMS_SQL.open_cursor;
-      DBMS_SQL.parse( c => v_cur, statement => rtrim(trim(p_region.source),';'), language_flag => DBMS_SQL.native );
+      DBMS_SQL.parse( c => v_cur, statement => REGEXP_REPLACE(p_region.source,';\s*$',''), language_flag => DBMS_SQL.native );
 
       IF v_binds.COUNT > 0 THEN
          FOR i IN v_binds.FIRST .. v_binds.LAST LOOP
