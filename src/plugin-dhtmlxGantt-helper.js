@@ -2,7 +2,7 @@ window.plugin_dhtmlxGantt = {};
 plugin_dhtmlxGantt.version = "0.1.0";
 
 plugin_dhtmlxGantt.init = function() {
-    //create jQuery objects for region ID and chart container ID
+    //create jQuery objects for region ID and chart container ID (see also plugin pl/sql source)
     plugin_dhtmlxGantt.regionIdElement = apex.jQuery("#" + plugin_dhtmlxGantt.regionId);
     plugin_dhtmlxGantt.chartContainerIdElement = apex.jQuery("#" + plugin_dhtmlxGantt.chartContainerId);
     //register apexrefresh event
@@ -17,6 +17,22 @@ plugin_dhtmlxGantt.init = function() {
     );
     //catch edit event for APEX, so that a custom APEX form can be opened by double clicking a task
     gantt.attachEvent("onBeforeLightbox", function(id) {
+        //get the url from the task data (if given) and open it
+        var task = apex.jQuery.grep(plugin_dhtmlxGantt.dataParsed.data, function(t) {
+            return t.id == id;
+        });
+        if (task.length === 0) {
+            plugin_dhtmlxGantt.util_logError("Double click on task returns id which is not present in data");
+        } else if (task.length == 1) {
+            if (task[0].url) {
+                apex.jQuery('#dhtmlxgantt-double-click-helper-' + plugin_dhtmlxGantt.regionId)
+                    .attr('href', task[0].url);
+                //method chaining was not working with click
+                apex.jQuery('#dhtmlxgantt-double-click-helper-' + plugin_dhtmlxGantt.regionId)[0].click();
+            }
+        } else {
+            plugin_dhtmlxGantt.util_logError("Double click on task returns id which is present " + task.length + " times in your data - please ensure distinct id's in your query");
+        }
         apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlx_task_double_click", {
             "id": id
         });
@@ -191,13 +207,26 @@ plugin_dhtmlxGantt.parse = function(data) {
     else {
         plugin_dhtmlxGantt.util_logError("Unable to parse your data - input data can be a XML string, JSON string or JavaScript object.");
     }
-};
-
-plugin_dhtmlxGantt.render = function() {
     //correct data structure: we allow the name "tasks" instead of "data" (feels more natural), the vendor library needs to have a "data" attribute:
     if (!plugin_dhtmlxGantt.dataParsed.data && plugin_dhtmlxGantt.dataParsed.tasks) {
         plugin_dhtmlxGantt.dataParsed.data = plugin_dhtmlxGantt.dataParsed.tasks;
     }
+    //correct data types
+    plugin_dhtmlxGantt.dataParsed.data.forEach(function(t) {
+        t.id = parseInt(t.id);
+        t.progress = parseFloat(t.progress);
+        t.duration = parseFloat(t.duration);
+        t.parent = parseInt(t.parent);
+        t.open = plugin_dhtmlxGantt.util_parseBool(t.open);
+    });
+    plugin_dhtmlxGantt.dataParsed.links.forEach(function(l) {
+        l.id = parseInt(l.id);
+        l.source = parseInt(l.source);
+        l.target = parseInt(l.target);
+    });
+};
+
+plugin_dhtmlxGantt.render = function() {
     //push data into gantt chart
     try {
         gantt.parse(plugin_dhtmlxGantt.dataParsed);
@@ -281,6 +310,23 @@ plugin_dhtmlxGantt.util_xml2json = function(xml) {
         }
     }
     return obj;
+};
+
+// helper to check boolean values
+plugin_dhtmlxGantt.util_parseBool = function(value) {
+    switch (String(value).trim().toLowerCase()) {
+        case "true":
+        case "yes":
+        case "1":
+            return true;
+        case "false":
+        case "no":
+        case "0":
+        case "":
+            return false;
+        default:
+            return false;
+    }
 };
 
 plugin_dhtmlxGantt.util_logError = function(message) {

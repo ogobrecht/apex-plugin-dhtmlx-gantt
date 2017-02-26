@@ -8,7 +8,8 @@ FUNCTION dhtmlx_gantt_render (
 BEGIN
     v_region_id := apex_plugin_util.escape( p_region.static_id, true);
     v_chart_container := v_region_id || '_dhtmlxGantt';
-    htp.p( '<div id="'|| v_chart_container || '" style="height:500px;"></div>' );
+    htp.p( '<a id="dhtmlxgantt-double-click-helper-' || v_region_id || '" style="display:none;"></a>' ||
+        '<div id="'|| v_chart_container || '" style="height:' || nvl(p_region.attribute_01,500) || 'px;"></div>' );
     apex_javascript.add_onload_code( '
 plugin_dhtmlxGantt.pluginId = "' || apex_plugin.get_ajax_identifier || '";
 plugin_dhtmlxGantt.regionId = "' || v_region_id || '";

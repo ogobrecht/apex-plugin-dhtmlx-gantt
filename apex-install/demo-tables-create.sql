@@ -18,6 +18,8 @@ CREATE TABLE plugin_gantt_demo_links (
     l_type     VARCHAR(1) NOT NULL
 );
 
+--
+
 INSERT INTO plugin_gantt_demo_tasks VALUES (
     1,
     'Project #1',
@@ -78,6 +80,27 @@ INSERT INTO plugin_gantt_demo_tasks VALUES (
     3
 );
 
+CREATE SEQUENCE plugin_gantt_demo_tasks_seq START WITH 7;
+
+CREATE OR REPLACE TRIGGER plugin_gantt_demo_tasks_bi BEFORE
+    INSERT ON plugin_gantt_demo_tasks
+    FOR EACH ROW
+    WHEN (
+        new.t_id IS NULL
+    )
+BEGIN
+    SELECT
+        plugin_gantt_demo_tasks_seq.NEXTVAL
+    INTO
+        :new.t_id
+    FROM
+        dual;
+
+END;
+/
+
+--
+
 INSERT INTO plugin_gantt_demo_links VALUES (
     1,
     1,
@@ -89,6 +112,13 @@ INSERT INTO plugin_gantt_demo_links VALUES (
     2,
     1,
     3,
+    '1'
+);
+
+INSERT INTO plugin_gantt_demo_links VALUES (
+    3,
+    3,
+    4,
     '1'
 );
 
@@ -105,5 +135,24 @@ INSERT INTO plugin_gantt_demo_links VALUES (
     6,
     '0'
 );
+
+CREATE SEQUENCE plugin_gantt_demo_links_seq START WITH 6;
+
+CREATE OR REPLACE TRIGGER plugin_gantt_demo_links_bi BEFORE
+    INSERT ON plugin_gantt_demo_links
+    FOR EACH ROW
+    WHEN (
+        new.l_id IS NULL
+    )
+BEGIN
+    SELECT
+        plugin_gantt_demo_links_seq.NEXTVAL
+    INTO
+        :new.l_id
+    FROM
+        dual;
+
+END;
+/
 
 COMMIT;
