@@ -15,27 +15,38 @@ plugin_dhtmlxGantt.init = function() {
         false :
         plugin_dhtmlxGantt.pageItemsToSubmit.replace(/\s/g, "").split(",")
     );
-    //catch edit event for APEX, so that a custom APEX form can be opened by double clicking a task
-    gantt.attachEvent("onBeforeLightbox", function(id) {
+    //catch task double click event for APEX, so that a custom APEX form can be opened
+    gantt.attachEvent("onTaskDblClick", function(id) {
         //get the url from the task data (if given) and open it
-        var task = apex.jQuery.grep(plugin_dhtmlxGantt.dataParsed.data, function(t) {
-            return t.id == id;
-        });
-        if (task.length === 0) {
-            plugin_dhtmlxGantt.util_logError("Double click on task returns id which is not present in data");
-        } else if (task.length == 1) {
-            if (task[0].url) {
-                apex.jQuery('#dhtmlxgantt-double-click-helper-' + plugin_dhtmlxGantt.regionId)
-                    .attr('href', task[0].url);
-                //method chaining was not working with click
-                apex.jQuery('#dhtmlxgantt-double-click-helper-' + plugin_dhtmlxGantt.regionId)[0].click();
-            }
-        } else {
-            plugin_dhtmlxGantt.util_logError("Double click on task returns id which is present " + task.length + " times in your data - please ensure distinct id's in your query");
+        var task = gantt.getTask(id);
+        if (task.url_edit) {
+            var elem = apex.jQuery('a.dhtmlxgantt-open-url-helper:first');
+            elem.attr('href', task.url_edit);
+            //method chaining was not working with click, so we try to use the first array element
+            elem[0].click();
         }
-        apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlx_task_double_click", {
-            "id": id
-        });
+        apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlxgantt_task_double_click", task);
+        return false; //this prevents the default Gantt edit popup
+    });
+    //catch task add event for APEX, so that a custom APEX form can be opened
+    gantt.attachEvent("onTaskCreated", function(task) {
+        //get the url from the task data (if given) and open it
+        if (task.parent) {
+            // replace parent id with the parent task object
+            task.parent = gantt.getTask(task.parent);
+            if (task.parent.url_create_child) {
+                var elem = apex.jQuery('a.dhtmlxgantt-open-url-helper:first');
+                elem.attr('href', task.parent.url_create_child);
+                //method chaining was not working with click, so we try to use the first array element
+                elem[0].click();
+            }
+        } else if (plugin_dhtmlxGantt.dataParsed.task_create_url_no_child) {
+            var elem = apex.jQuery('a.dhtmlxgantt-open-url-helper:first');
+            elem.attr('href', plugin_dhtmlxGantt.dataParsed.task_create_url_no_child);
+            //method chaining was not working with click, so we try to use the first array element
+            elem[0].click();
+        }
+        apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlxgantt_task_add", task);
         return false; //this prevents the default Gantt edit popup
     });
     //load initial data
@@ -305,6 +316,8 @@ plugin_dhtmlxGantt.util_xml2json = function(xml) {
                     obj.data.push(item2json(item));
                 } else if (nodeName === "link" || nodeName === "links") {
                     obj.links.push(item2json(item));
+                } else if (nodeName === "task_create_url_no_child") {
+                    obj.task_create_url_no_child = item.childNodes[0].nodeValue;
                 }
             }
         }
