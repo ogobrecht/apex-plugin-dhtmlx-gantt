@@ -18,17 +18,18 @@ plugin_dhtmlxGantt.init = function() {
     //catch task double click event for APEX, so that a custom APEX form can be opened
     gantt.attachEvent("onTaskDblClick", function(id) {
         //get the url from the task data (if given) and open it
-        var task = gantt.getTask(id);
-        if (task.url_edit) {
-            var elem = apex.jQuery('a.dhtmlxgantt-open-url-helper:first');
-            elem.attr('href', task.url_edit);
-            //method chaining was not working with click, so we try to use the first array element
-            elem[0].click();
+        if (id) { // if link is double clicked this event is also fired with empty id, so we check here the id
+            var task = gantt.getTask(id);
+            if (task.url_edit) {
+                plugin_dhtmlxGantt.util_openUrl(task.url_edit);
+            }
+            apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlxgantt_task_double_click", task);
+            return false; //this prevents the default Gantt edit popup
+        } else {
+            return true; //without this link double click would not be fired
         }
-        apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlxgantt_task_double_click", task);
-        return false; //this prevents the default Gantt edit popup
     });
-    //catch task add event for APEX, so that a custom APEX form can be opened
+    //catch task create event for APEX, so that a custom APEX form can be opened
     gantt.attachEvent("onTaskCreated", function(task) {
         //get the url from the task data (if given) and open it
         if (task.parent) {
@@ -41,12 +42,20 @@ plugin_dhtmlxGantt.init = function() {
                 elem[0].click();
             }
         } else if (plugin_dhtmlxGantt.dataParsed.task_create_url_no_child) {
-            var elem = apex.jQuery('a.dhtmlxgantt-open-url-helper:first');
-            elem.attr('href', plugin_dhtmlxGantt.dataParsed.task_create_url_no_child);
-            //method chaining was not working with click, so we try to use the first array element
-            elem[0].click();
+            plugin_dhtmlxGantt.util_openUrl(plugin_dhtmlxGantt.dataParsed.task_create_url_no_child);
         }
-        apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlxgantt_task_add", task);
+        apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlxgantt_task_create", task);
+        return false; //this prevents the default Gantt edit popup
+    });
+    //catch task double click event for APEX, so that a custom APEX form can be opened
+    gantt.attachEvent("onLinkDblClick", function(id) {
+        //get the url from the task data (if given) and open it
+        var link = gantt.getLink(id);
+        console.log(link);
+        if (link.url_edit) {
+            plugin_dhtmlxGantt.util_openUrl(link.url_edit);
+        }
+        apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlxgantt_link_double_click", link);
         return false; //this prevents the default Gantt edit popup
     });
     //load initial data
@@ -340,6 +349,14 @@ plugin_dhtmlxGantt.util_parseBool = function(value) {
         default:
             return false;
     }
+};
+
+// helper to open a APEX prepared URL
+plugin_dhtmlxGantt.util_openUrl = function(url) {
+    var elem = apex.jQuery('a.dhtmlxgantt-open-url-helper:first');
+    elem.attr('href', url);
+    //method chaining was not working with click, so we try to use the first array element
+    elem[0].click();
 };
 
 plugin_dhtmlxGantt.util_logError = function(message) {
