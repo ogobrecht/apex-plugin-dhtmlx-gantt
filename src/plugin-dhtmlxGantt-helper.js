@@ -24,7 +24,7 @@ plugin_dhtmlxGantt.init = function() {
                 plugin_dhtmlxGantt.util_openUrl(task.url_edit);
             }
             apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlxgantt_task_double_click", task);
-            return false; //this prevents the default Gantt edit popup
+            return false; //this prevents the default action
         } else {
             return true; //without this link double click would not be fired
         }
@@ -41,25 +41,35 @@ plugin_dhtmlxGantt.init = function() {
                 //method chaining was not working with click, so we try to use the first array element
                 elem[0].click();
             }
-        } else if (plugin_dhtmlxGantt.dataParsed.task_create_url_no_child) {
-            plugin_dhtmlxGantt.util_openUrl(plugin_dhtmlxGantt.dataParsed.task_create_url_no_child);
+        } else if (plugin_dhtmlxGantt.dataParsed.task_create_url_no_child.url) {
+            plugin_dhtmlxGantt.util_openUrl(plugin_dhtmlxGantt.dataParsed.task_create_url_no_child.url);
         }
         apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlxgantt_task_create", task);
-        return false; //this prevents the default Gantt edit popup
+        return false; //this prevents the default action
     });
-    //catch task double click event for APEX, so that a custom APEX form can be opened
+    //catch link double click event for APEX, so that a custom APEX form can be opened
     gantt.attachEvent("onLinkDblClick", function(id) {
-        //get the url from the task data (if given) and open it
+        //get the url from the link data (if given) and open it
         var link = gantt.getLink(id);
-        console.log(link);
         if (link.url_edit) {
             plugin_dhtmlxGantt.util_openUrl(link.url_edit);
         }
         apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlxgantt_link_double_click", link);
-        return false; //this prevents the default Gantt edit popup
+        return false; //this prevents the default action
     });
     //load initial data
     plugin_dhtmlxGantt.load();
+    //catch link double click event for APEX, so that a custom APEX form can be opened
+    gantt.attachEvent("onBeforeLinkAdd", function(id, link) {
+        if (gantt.isLinkAllowed(link)) {
+            apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlxgantt_link_create", link);
+        }
+        return false; //this prevents the default action
+    });
+    //load initial data
+    plugin_dhtmlxGantt.load();
+
+
 };
 
 plugin_dhtmlxGantt.load = function(data) {
@@ -325,8 +335,8 @@ plugin_dhtmlxGantt.util_xml2json = function(xml) {
                     obj.data.push(item2json(item));
                 } else if (nodeName === "link" || nodeName === "links") {
                     obj.links.push(item2json(item));
-                } else if (nodeName === "task_create_url_no_child") {
-                    obj.task_create_url_no_child = item.childNodes[0].nodeValue;
+                } else if (nodeName === "task_create_url_no_child" || nodeName === "link_create_url_template") {
+                    obj[nodeName] = item2json(item);
                 }
             }
         }

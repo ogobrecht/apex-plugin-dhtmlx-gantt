@@ -9,7 +9,7 @@ BEGIN
     v_region_id := apex_plugin_util.escape( p_region.static_id, true);
     v_chart_container := v_region_id || '_dhtmlxGantt';
     htp.p( '<a class="dhtmlxgantt-open-url-helper" style="display:none;"></a>' ||
-        '<div id="'|| v_chart_container || '" style="height:' || nvl(p_region.attribute_01,500) || 'px;"></div>' );
+        '<div id="'|| v_chart_container || '" style="width:100%; height:' || nvl(p_region.attribute_01,500) || 'px;"></div>' );
     apex_javascript.add_onload_code( '
 plugin_dhtmlxGantt.pluginId = "' || apex_plugin.get_ajax_identifier || '";
 plugin_dhtmlxGantt.regionId = "' || v_region_id || '";

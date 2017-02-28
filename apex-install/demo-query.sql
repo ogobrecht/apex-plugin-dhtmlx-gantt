@@ -67,15 +67,17 @@ WITH tasks AS ( --> START YOUR TASKS QUERY HERE
     SELECT
         XMLELEMENT(
             "task_create_url_no_child",
+            XMLATTRIBUTES(
                 -- The url to call when the user click the first plus sign in the chart to 
                 -- create a new task (no child,because without parent id):
-            apex_util.prepare_url(
-                p_url                  => 'f?p='
-                 ||  :app_id
-                 ||  ':2:'
-                 ||  :app_session
-                 ||  ':::2',
-                p_triggering_element   => 'apex.jQuery("#my_gantt")'
+                apex_util.prepare_url(
+                    p_url                  => 'f?p='
+                     ||  :app_id
+                     ||  ':2:'
+                     ||  :app_session
+                     ||  ':::2',
+                    p_triggering_element   => 'apex.jQuery("#my_gantt")'
+                ) AS "url"
             )
         ) AS special_url_xml
     FROM

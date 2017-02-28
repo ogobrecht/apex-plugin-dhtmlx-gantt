@@ -1,6 +1,6 @@
 - delete a record does not trigger "Dialog Close"
   - http://max-tremblay.blogspot.de/2016/11/handling-dialog-cancel-event.html
-- support create link
+- ~~support create link~~
 - use of iso date instead of lib default "dd-mm-yyyy"
 - localization option
 - skin option
