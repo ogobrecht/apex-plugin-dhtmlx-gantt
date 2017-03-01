@@ -1,20 +1,24 @@
 window.plugin_dhtmlxGantt = {};
-plugin_dhtmlxGantt.version = "0.1.0";
+plugin_dhtmlxGantt.version = "0.2.0";
 
 plugin_dhtmlxGantt.init = function() {
+
     //create jQuery objects for region ID and chart container ID (see also plugin pl/sql source)
     plugin_dhtmlxGantt.regionIdElement = apex.jQuery("#" + plugin_dhtmlxGantt.regionId);
     plugin_dhtmlxGantt.chartContainerIdElement = apex.jQuery("#" + plugin_dhtmlxGantt.chartContainerId);
+
     //register apexrefresh event
     plugin_dhtmlxGantt.regionIdElement.bind("apexrefresh", function() {
         plugin_dhtmlxGantt.load();
     });
+
     //normalize apexPageItemsToSubmit from string to array
     plugin_dhtmlxGantt.pageItemsToSubmit = (
         plugin_dhtmlxGantt.pageItemsToSubmit === "" ?
         false :
         plugin_dhtmlxGantt.pageItemsToSubmit.replace(/\s/g, "").split(",")
     );
+
     //catch task double click event for APEX, so that a custom APEX form can be opened
     gantt.attachEvent("onTaskDblClick", function(id) {
         //get the url from the task data (if given) and open it
@@ -29,6 +33,7 @@ plugin_dhtmlxGantt.init = function() {
             return true; //without this link double click would not be fired
         }
     });
+
     //catch task create event for APEX, so that a custom APEX form can be opened
     gantt.attachEvent("onTaskCreated", function(task) {
         //get the url from the task data (if given) and open it
@@ -47,6 +52,7 @@ plugin_dhtmlxGantt.init = function() {
         apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlxgantt_task_create", task);
         return false; //this prevents the default action
     });
+
     //catch link double click event for APEX, so that a custom APEX form can be opened
     gantt.attachEvent("onLinkDblClick", function(id) {
         //get the url from the link data (if given) and open it
@@ -57,8 +63,7 @@ plugin_dhtmlxGantt.init = function() {
         apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlxgantt_link_double_click", link);
         return false; //this prevents the default action
     });
-    //load initial data
-    plugin_dhtmlxGantt.load();
+
     //catch link double click event for APEX, so that a custom APEX form can be opened
     gantt.attachEvent("onBeforeLinkAdd", function(id, link) {
         if (gantt.isLinkAllowed(link)) {
@@ -66,10 +71,19 @@ plugin_dhtmlxGantt.init = function() {
         }
         return false; //this prevents the default action
     });
+
     //load initial data
     plugin_dhtmlxGantt.load();
 
-
+    //rerender on window resize
+    apex.jQuery(window).on("apexwindowresized", function(event) {
+        gantt.render();
+    });
+    apex.jQuery('#t_Button_navControl').click(function() {
+        setTimeout(function() {
+            gantt.render();
+        }, 500);
+    });
 };
 
 plugin_dhtmlxGantt.load = function(data) {

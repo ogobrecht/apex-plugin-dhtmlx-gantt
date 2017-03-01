@@ -16,6 +16,7 @@ plugin_dhtmlxGantt.regionId = "' || v_region_id || '";
 plugin_dhtmlxGantt.chartContainerId = "' || v_chart_container || '";
 plugin_dhtmlxGantt.pageItemsToSubmit = "' || p_region.ajax_items_to_submit || '";
 plugin_dhtmlxGantt.queryDefined = ' || case when p_region.source is null then 'false' else 'true' end || ';
+gantt.config.xml_date = "%Y-%m-%d";
 gantt.init("' || v_chart_container || '");
 plugin_dhtmlxGantt.init();
 ');

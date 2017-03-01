@@ -6,7 +6,7 @@ WITH tasks AS ( --> START YOUR TASKS QUERY HERE
                 t_id AS "id",
                 t_text AS "text",
                 -- default format from dhtmlxGantt library is dd-mm-yyyy (configurable in JavaScript):
-                TO_CHAR(t_start_date,'dd-mm-yyyy') AS "start_date",
+                TO_CHAR(t_start_date,'yyyy-mm-dd') AS "start_date",
                 t_progress AS "progress",
                 t_duration AS "duration",
                 t_parent_t_id AS "parent",
