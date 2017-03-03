@@ -17,7 +17,9 @@ plugin_dhtmlxGantt.chartContainerId = "' || v_chart_container || '";
 plugin_dhtmlxGantt.pageItemsToSubmit = "' || p_region.ajax_items_to_submit || '";
 plugin_dhtmlxGantt.queryDefined = ' || case when p_region.source is null then 'false' else 'true' end || ';
 gantt.config.xml_date = "%Y-%m-%d";
+' || p_region.attribute_02 || '
 gantt.init("' || v_chart_container || '");
+' || p_region.attribute_03 || '
 plugin_dhtmlxGantt.init();
 ');
     RETURN NULL;

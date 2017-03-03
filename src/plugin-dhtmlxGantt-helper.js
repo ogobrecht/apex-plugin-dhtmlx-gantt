@@ -72,6 +72,16 @@ plugin_dhtmlxGantt.init = function() {
         return false; //this prevents the default action
     });
 
+    //catch task drag event for APEX, so that a dynamic action can be registered
+    //mode can be "resize", "progress", "move", "ignore"
+    gantt.attachEvent("onAfterTaskDrag", function(id, mode, e) {
+        var data = {
+            mode: mode,
+            task: gantt.getTask(id)
+        };
+        apex.event.trigger(plugin_dhtmlxGantt.chartContainerIdElement, "dhtmlxgantt_task_drag", data);
+    });
+
     //load initial data
     plugin_dhtmlxGantt.load();
 
@@ -381,6 +391,22 @@ plugin_dhtmlxGantt.util_openUrl = function(url) {
     elem.attr('href', url);
     //method chaining was not working with click, so we try to use the first array element
     elem[0].click();
+};
+
+// helper to get local date string in ISO format
+// http://stackoverflow.com/questions/2573521/how-do-i-output-an-iso-8601-formatted-string-in-javascript
+plugin_dhtmlxGantt.toLocalIsoString = function(date) {
+    function pad(n) {
+        return n < 10 ? '0' + n : n;
+    }
+    var localIsoString = date.getFullYear() + '-' +
+        pad(date.getMonth() + 1) + '-' +
+        pad(date.getDate()) + 'T' +
+        pad(date.getHours()) + ':' +
+        pad(date.getMinutes()) + ':' +
+        pad(date.getSeconds());
+    if (date.getTimezoneOffset() === 0) localIsoString += 'Z';
+    return localIsoString;
 };
 
 plugin_dhtmlxGantt.util_logError = function(message) {
