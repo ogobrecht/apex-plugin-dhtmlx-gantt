@@ -6,6 +6,10 @@ FUNCTION dhtmlx_gantt_render (
     v_region_id       VARCHAR2(100);
     v_chart_container VARCHAR2(100);
 BEGIN
+    apex_css.add_file( p_name      => p_region.attribute_04
+                     , p_directory => p_plugin.file_prefix || 'dhtmlxgantt/');
+    apex_javascript.add_library( p_name                  => replace(p_region.attribute_05, '.js', '')
+                               , p_directory             => p_plugin.file_prefix || 'dhtmlxgantt/locale/');
     v_region_id := apex_plugin_util.escape( p_region.static_id, true);
     v_chart_container := v_region_id || '_dhtmlxGantt';
     htp.p( '<a class="dhtmlxgantt-open-url-helper" style="display:none;"></a>' ||

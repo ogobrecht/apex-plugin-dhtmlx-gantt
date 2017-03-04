@@ -1,5 +1,5 @@
 window.plugin_dhtmlxGantt = {};
-plugin_dhtmlxGantt.version = "0.2.0";
+plugin_dhtmlxGantt.version = "0.3.0";
 
 plugin_dhtmlxGantt.init = function() {
 
@@ -395,7 +395,7 @@ plugin_dhtmlxGantt.util_openUrl = function(url) {
 
 // helper to get local date string in ISO format
 // http://stackoverflow.com/questions/2573521/how-do-i-output-an-iso-8601-formatted-string-in-javascript
-plugin_dhtmlxGantt.toLocalIsoString = function(date) {
+plugin_dhtmlxGantt.util_toLocalIsoString = function(date) {
     function pad(n) {
         return n < 10 ? '0' + n : n;
     }
@@ -407,6 +407,17 @@ plugin_dhtmlxGantt.toLocalIsoString = function(date) {
         pad(date.getSeconds());
     if (date.getTimezoneOffset() === 0) localIsoString += 'Z';
     return localIsoString;
+};
+
+// helper to round a number with specified precision
+// examples: plugin_dhtmlxGantt.round(1234.5678, 1); // 1234.6
+//         : plugin_dhtmlxGantt.round(1234.5678, -1); // 1230
+// https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Math/round
+plugin_dhtmlxGantt.util_round = function(number, precision) {
+    var factor = Math.pow(10, precision);
+    var tempNumber = number * factor;
+    var roundedTempNumber = Math.round(tempNumber);
+    return roundedTempNumber / factor;
 };
 
 plugin_dhtmlxGantt.util_logError = function(message) {
