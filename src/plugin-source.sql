@@ -21,6 +21,14 @@ plugin_dhtmlxGantt.chartContainerId = "' || v_chart_container || '";
 plugin_dhtmlxGantt.pageItemsToSubmit = "' || p_region.ajax_items_to_submit || '";
 plugin_dhtmlxGantt.queryDefined = ' || case when p_region.source is null then 'false' else 'true' end || ';
 gantt.config.xml_date = "%Y-%m-%d";
+gantt.config.show_grid = ' || p_region.attribute_06 || ';
+gantt.config.show_task_cells = ' || p_region.attribute_09 || ';
+gantt.config.show_links = ' || p_region.attribute_07 || ';
+gantt.config.show_progress = ' || p_region.attribute_08 || ';
+gantt.config.drag_move = ' || p_region.attribute_10 || ';
+gantt.config.drag_progress = ' || p_region.attribute_11 || ';
+gantt.config.drag_resize = ' || p_region.attribute_12 || ';
+gantt.config.drag_links = ' || p_region.attribute_13 || ';
 ' || p_region.attribute_02 || '
 gantt.init("' || v_chart_container || '");
 ' || p_region.attribute_03 || '

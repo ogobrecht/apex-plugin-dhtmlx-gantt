@@ -1,5 +1,5 @@
 window.plugin_dhtmlxGantt = {};
-plugin_dhtmlxGantt.version = "0.3.0";
+plugin_dhtmlxGantt.version = "0.4.0";
 
 plugin_dhtmlxGantt.init = function() {
 
