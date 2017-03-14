@@ -1,0 +1,31 @@
+{
+  "name" : "dhtmlxGantt",
+  "version" : "0.5.0",
+  "description" : "HTML5 gantt chart based on a dhtmlx.com library",
+  "keywords" : ["JavaScript", "chart", "gantt"],
+  "homepage" : "https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt",
+  "license" : "GPLv2",
+  "author" : {
+    "name" : "Ottmar Gobrecht",
+    "url" : "https://github.com/ogobrecht"
+  },
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt.git"
+  },
+  "bugs" : {
+    "url" : "https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt/issues"
+  },
+  "oracle" : {
+    "versions" : ["10.2.0.1"],
+    "apex" : {
+      "versions" : ["5.1.0"],
+      "plugin" : {
+        "internalName" : "COM.GITHUB.OGOBRECHT.DHTMLXGANTT",
+        "type" : "region",
+        "demo" : "https://apex.oracle.com/pls/apex/f?p=116612:1",
+        "previewImage" : "https://raw.githubusercontent.com/ogobrecht/apex-plugin-dhtmlx-gantt/master/preview.png"
+      }
+    }
+  }
+}

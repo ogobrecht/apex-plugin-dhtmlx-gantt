@@ -1,3 +1,8 @@
+This Project uses the gantt library from https://dhtmlx.com and is
+GPLv2 licensed. You can find the sources of the library in the subfolder
+server/dhtmlxgantt.
+
+
                     GNU GENERAL PUBLIC LICENSE
                        Version 2, June 1991
 
