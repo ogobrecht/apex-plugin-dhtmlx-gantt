@@ -13,7 +13,7 @@ Please do not download directly this code - this is the development version and 
     * For the XML format there is an own parser integrated to support easy SQL queries - see example below
   * The plugin delivers sample data, if no query is defined
   * There are five events available to react on chart actions: Task Create, Task Double Click, Task Drag (change of progress, start date, duration), Link Create, Link Double Click
-  * In the region attributes you can configure some aspects of Gantt chart - for an example the height, the skin, the UI language (30 different delivered by the vendor); There is also the possibility to place custom before and after initialization JavaScript code
+  * In the region attributes you can configure some aspects of the Gantt chart - for an example the height, the skin, the UI language (30 different delivered by the vendor); There is also the possibility to place custom before and after initialization JavaScript code
   * Everything else can be done with the extensive JavaScript API available from DHTMLX - please refer to the [docs][3]
 
 

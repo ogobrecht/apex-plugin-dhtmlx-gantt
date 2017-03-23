@@ -41,10 +41,7 @@ plugin_dhtmlxGantt.init = function() {
             // replace parent id with the parent task object
             task.parent = gantt.getTask(task.parent);
             if (task.parent.url_create_child) {
-                var elem = apex.jQuery('a.dhtmlxgantt-open-url-helper:first');
-                elem.attr('href', task.parent.url_create_child);
-                //method chaining was not working with click, so we try to use the first array element
-                elem[0].click();
+                plugin_dhtmlxGantt.util_openUrl(task.parent.url_create_child);
             }
         } else if (plugin_dhtmlxGantt.dataParsed.task_create_url_no_child.url) {
             plugin_dhtmlxGantt.util_openUrl(plugin_dhtmlxGantt.dataParsed.task_create_url_no_child.url);
@@ -374,10 +371,12 @@ plugin_dhtmlxGantt.util_parseBool = function(value) {
     switch (String(value).trim().toLowerCase()) {
         case "true":
         case "yes":
+        case "y":
         case "1":
             return true;
         case "false":
         case "no":
+        case "n":
         case "0":
         case "":
             return false;
