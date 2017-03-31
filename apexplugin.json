@@ -8,7 +8,9 @@
   "author" : {
     "name" : "Ottmar Gobrecht",
     "email" : "ottmar.gobrecht@gmail.com",
-    "url" : "https://ogobrecht.github.io"
+    "url" : "https://ogobrecht.github.io",
+    "twitter": "ogobrecht",
+    "donationUrl": "https://www.paypal.me/ogobrecht"
   },
   "repository" : {
     "type" : "git",
