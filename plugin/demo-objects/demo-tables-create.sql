@@ -25,6 +25,11 @@ CREATE TABLE plugin_gantt_demo_links (
     )
 );
 
+CREATE TABLE plugin_gantt_demo_holidays (
+    h_date     DATE NOT NULL PRIMARY KEY CHECK (h_date = trunc(h_date)),
+    h_comment  VARCHAR2 (30)
+);
+
 --
 
 INSERT INTO plugin_gantt_demo_tasks VALUES (
@@ -167,5 +172,13 @@ BEGIN
 
 END;
 /
+
+--
+
+INSERT INTO plugin_gantt_demo_holidays VALUES (
+    date '2017-04-04',
+    'Dummy holiday'
+);
+
 
 COMMIT;

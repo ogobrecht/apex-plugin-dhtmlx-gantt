@@ -1,11 +1,11 @@
 /**
- * Oracle APEX plugin dhtmlxGantt helper - v0.5.0 - 2017-03-17
+ * Oracle APEX plugin dhtmlxGantt helper - v0.6.0 - 2017-07-24
  * https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt
  * Copyright (c) 2017 Ottmar Gobrecht - GPLv2 license
  */
 
 window.plugin_dhtmlxGantt = {};
-plugin_dhtmlxGantt.version = "0.5.0";
+plugin_dhtmlxGantt.version = "0.6.0";
 
 plugin_dhtmlxGantt.init = function() {
 
@@ -104,8 +104,7 @@ plugin_dhtmlxGantt.load = function(data) {
     apex.event.trigger(plugin_dhtmlxGantt.regionIdElement, "apexbeforerefresh");
     //if data is provided (from anywhere) we save it and start the parsing
     if (data) {
-        plugin_dhtmlxGantt.dataRaw = data;
-        plugin_dhtmlxGantt.parse();
+        plugin_dhtmlxGantt.parse(data);
     }
     //without provided data...
     else {
@@ -120,9 +119,8 @@ plugin_dhtmlxGantt.load = function(data) {
                     loadingIndicator: plugin_dhtmlxGantt.chartContainerIdElement,
                     loadingIndicatorPosition: "centered",
                     success: function(dataString) {
-                        plugin_dhtmlxGantt.dataRaw = dataString;
                         //data from query is allowed to be XML or JSON, so we have to parse it first here
-                        plugin_dhtmlxGantt.parse();
+                        plugin_dhtmlxGantt.parse(dataString);
                     },
                     error: function(xhr, status, errorThrown) {
                         plugin_dhtmlxGantt.util_logError("Unable to load data - message from jQuery AJAX call: " + xhr.responseText);
@@ -135,8 +133,8 @@ plugin_dhtmlxGantt.load = function(data) {
         }
         //...or provide example data
         else {
-            plugin_dhtmlxGantt.dataParsed = {
-                "data": [{
+            plugin_dhtmlxGantt.parse({
+                "tasks": [{
                         "id": 1,
                         "text": "Project #1 (NO REGION QUERY DEFINED: EXAMPLE DATA USED)",
                         "start_date": "2017-04-01",
@@ -220,9 +218,11 @@ plugin_dhtmlxGantt.load = function(data) {
                         "target": 6,
                         "type": "0"
                     }
-                ]
-            };
-            plugin_dhtmlxGantt.render();
+                ],
+                "holidays": [{
+                    "date": "2017-04-04"
+                }]
+            });
         }
     }
 };
@@ -234,7 +234,6 @@ plugin_dhtmlxGantt.parse = function(data) {
     // data is an object
     if (plugin_dhtmlxGantt.dataRaw.constructor === Object) {
         plugin_dhtmlxGantt.dataParsed = plugin_dhtmlxGantt.dataRaw;
-        plugin_dhtmlxGantt.render();
     }
     // data is a string
     else if (plugin_dhtmlxGantt.dataRaw.constructor === String) {
@@ -247,8 +246,6 @@ plugin_dhtmlxGantt.parse = function(data) {
             }
             if (plugin_dhtmlxGantt.dataParsed === null) {
                 plugin_dhtmlxGantt.util_logError("Unable to parse XML string");
-            } else {
-                plugin_dhtmlxGantt.render();
             }
         } else if (plugin_dhtmlxGantt.dataRaw.trim().substr(0, 1) === "{") {
             try {
@@ -256,7 +253,6 @@ plugin_dhtmlxGantt.parse = function(data) {
             } catch (e) {
                 plugin_dhtmlxGantt.util_logError("Unable to parse JSON string - please check for valid JSON before use here in plugin (e.g. https://jsonformatter.curiousconcept.com): " + e.message);
             }
-            plugin_dhtmlxGantt.render();
         } else {
             plugin_dhtmlxGantt.util_logError("Your data string is not starting with \"<\" or \"{\" - parsing not possible");
         }
@@ -265,31 +261,48 @@ plugin_dhtmlxGantt.parse = function(data) {
     else {
         plugin_dhtmlxGantt.util_logError("Unable to parse your data - input data can be a XML string, JSON string or JavaScript object.");
     }
-    //correct data structure: we allow the name "tasks" instead of "data" (feels more natural), the vendor library needs to have a "data" attribute:
-    if (!plugin_dhtmlxGantt.dataParsed.data && plugin_dhtmlxGantt.dataParsed.tasks) {
-        plugin_dhtmlxGantt.dataParsed.data = plugin_dhtmlxGantt.dataParsed.tasks;
-    }
-    //correct data types
-    plugin_dhtmlxGantt.dataParsed.data.forEach(function(t) {
-        t.id = parseInt(t.id);
-        t.progress = parseFloat(t.progress);
-        t.duration = parseFloat(t.duration);
-        t.parent = parseInt(t.parent);
-        t.open = plugin_dhtmlxGantt.util_parseBool(t.open);
-    });
-    plugin_dhtmlxGantt.dataParsed.links.forEach(function(l) {
-        l.id = parseInt(l.id);
-        l.source = parseInt(l.source);
-        l.target = parseInt(l.target);
-    });
-};
-
-plugin_dhtmlxGantt.render = function() {
-    //push data into gantt chart
-    try {
-        gantt.parse(plugin_dhtmlxGantt.dataParsed);
-    } catch (e) {
-        plugin_dhtmlxGantt.util_logError("vendor base library was unable to use your data: " + e.message);
+    if (!plugin_dhtmlxGantt.dataParsed) {
+        plugin_dhtmlxGantt.util_logError("No data available for rendering");
+    } else {
+        //correct data structure: we allow the name "tasks" instead of "data" (feels more natural), the vendor library needs to have a "data" attribute:
+        if (!plugin_dhtmlxGantt.dataParsed.data && plugin_dhtmlxGantt.dataParsed.tasks) {
+            plugin_dhtmlxGantt.dataParsed.data = plugin_dhtmlxGantt.dataParsed.tasks;
+        }
+        //correct data types
+        plugin_dhtmlxGantt.dataParsed.data.forEach(function(t) {
+            t.id = parseInt(t.id);
+            t.progress = parseFloat(t.progress);
+            t.duration = parseFloat(t.duration);
+            t.parent = parseInt(t.parent);
+            t.open = plugin_dhtmlxGantt.util_parseBool(t.open);
+        });
+        plugin_dhtmlxGantt.dataParsed.links.forEach(function(l) {
+            l.id = parseInt(l.id);
+            l.source = parseInt(l.source);
+            l.target = parseInt(l.target);
+        });
+        //add holidays to gantt config
+        if (plugin_dhtmlxGantt.dataParsed.holidays && plugin_dhtmlxGantt.dataParsed.holidays.length > 0) {
+            plugin_dhtmlxGantt.dataParsed.holidays.forEach(function(holiday) {
+                try {
+                    var date = holiday.date.split('-');
+                    // months are starting with 0 in JavaScript
+                    gantt.setWorkTime({
+                        date: new Date(parseInt(date[0]), parseInt(date[1]) - 1, parseInt(date[2])),
+                        hours: false
+                    });
+                } catch (e) {
+                    plugin_dhtmlxGantt.util_logError("unable to set a holiday with your data - format must be yyyy-mm-dd: " + e.message);
+                }
+            });
+        }
+        //push data into gantt chart
+        try {
+            gantt.clearAll();
+            gantt.parse(plugin_dhtmlxGantt.dataParsed);
+        } catch (e) {
+            plugin_dhtmlxGantt.util_logError("vendor base library was unable to use your data: " + e.message);
+        }
     }
     //trigger event, so that other dynamic actions registered on this event are called
     apex.event.trigger(plugin_dhtmlxGantt.regionIdElement, "apexafterrefresh");
@@ -354,6 +367,7 @@ plugin_dhtmlxGantt.util_xml2json = function(xml) {
         obj = {};
         obj.data = [];
         obj.links = [];
+        obj.holidays = [];
         if (xml.childNodes.item(0).hasChildNodes()) {
             for (var i = 0; i < xml.childNodes.item(0).childNodes.length; i++) {
                 subobj = null;
@@ -363,6 +377,8 @@ plugin_dhtmlxGantt.util_xml2json = function(xml) {
                     obj.data.push(item2json(item));
                 } else if (nodeName === "link" || nodeName === "links") {
                     obj.links.push(item2json(item));
+                } else if (nodeName === "holiday" || nodeName === "holidays") {
+                    obj.holidays.push(item2json(item));
                 } else if (nodeName === "task_create_url_no_child" || nodeName === "link_create_url_template") {
                     obj[nodeName] = item2json(item);
                 }

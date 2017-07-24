@@ -45,10 +45,27 @@ gantt.config.drag_move = ' || p_region.attribute_10 || ';
 gantt.config.drag_progress = ' || p_region.attribute_11 || ';
 gantt.config.drag_resize = ' || p_region.attribute_12 || ';
 gantt.config.drag_links = ' || p_region.attribute_13 || ';
-' || p_region.attribute_02 || ' /* before init JS code */
+gantt.config.work_time = ' || p_region.attribute_14 || ';
+' || case when p_region.attribute_15 = 'true' then ' /* highlight weekends */
+gantt.templates.task_cell_class = function(task, date){
+    if ( gantt.config.scale_unit === "day" && !gantt.isWorkTime(date) ) return "no_work_time";
+    return "";
+};
+gantt.templates.scale_cell_class = function(date){
+    if ( gantt.config.scale_unit === "day" && !gantt.isWorkTime(date) ) return "no_work_time";
+    return "";
+};
+' else null end || '
+/* before init JS code */
+' || p_region.attribute_02 || '
 gantt.init("' || v_chart_container || '");
-' || p_region.attribute_03 || ' /* after init JS code */
+/* after init JS code */
+' || p_region.attribute_03 || '
 plugin_dhtmlxGantt.init();
+/* add additional styles for non working days - skin dependend: must run after first render cycle */
+apex.jQuery("body").prepend("<style> .gantt_scale_cell.no_work_time, .gantt_task_cell.no_work_time {background-color:'
+  || nvl(p_region.attribute_16,'#f4f7f4') ||
+';} .gantt_selected .gantt_scale_cell.no_work_time, .gantt_selected .gantt_task_cell.no_work_time {background-color:transparent;} .gantt_scale_cell.no_work_time {border-bottom: 1px solid " + apex.jQuery(".gantt_task_scale:first").css("border-bottom-color") + ";} </style>");
 ');
     RETURN NULL;
     --

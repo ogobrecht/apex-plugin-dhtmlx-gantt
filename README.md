@@ -1,5 +1,4 @@
-Please do not download directly this code - this is the development version and can be unstable. You can find the [latest stable version here][1].
-
+[Download latest version][1] | [Online demo app][5] | [Issues][4]
 
 # Oracle APEX Region Type Plugin: dhtmlxGantt
 
@@ -9,7 +8,7 @@ Please do not download directly this code - this is the development version and 
   * I was asked to create this plugin and I have nothing to do with the company DHTMLX, so please do not complain ;-)
 * Currently supported is only APEX 5.1
 * Features of the APEX integration:
-  * Data can be delivered as XML or JSON string or as JSON object
+  * Data can be delivered as XML (string) or JSON (string or object)
     * For the XML format there is an own parser integrated to support easy SQL queries - see example below
   * The plugin delivers sample data, if no query is defined
   * There are five events available to react on chart actions: Task Create, Task Double Click, Task Drag (change of progress, start date, duration), Link Create, Link Double Click
@@ -17,22 +16,15 @@ Please do not download directly this code - this is the development version and 
   * Everything else can be done with the extensive JavaScript API available from DHTMLX - please refer to the [docs][3]
 
 
-## Links
-
-* [Download][1]
-* [Issues][4]
-* [Online Demo App][5]
-
-
 ## How To Use
 
-### The Recommended First Way
+### The Recommended Way
 
 1. Download the [latest version][1]
-2. Go to subdirectory `plugin/demo-objects`, unzip demo-app-including-supporting-objects.sql.zip and install this application
+2. Go to subdirectory `plugin/demo-objects` and install demo-app-including-supporting-objects.sql
 3. Run the demo app and inspect, how it was implemented
 
-### The DIY Second Way
+### The DIY Way
 
 1. Download the [latest version][1]
 2. Install the plugin from the subdirectory `plugin`
@@ -45,7 +37,7 @@ Please do not download directly this code - this is the development version and 
 
 You can deliver JSON or XML. In both cases you need to create a query that returns a single CLOB result. To support also older databases without JSON functionality the example below is a XML query.
 
-No fear, if you look in detail to the example query, you will find out that you have to define only some sort of "standard selects" for the tasks and the links between the tasks. Grab the example, put it in your preferred SQL tool and play around with it.
+No fear, if you look in detail to the example query, you will find out that you have to define only some sort of "standard selects" for the tasks and the links between the tasks - holiday dates are optional as also the prepared URLs. Grab the example, put it in your preferred SQL tool and play around with it.
 
 The result of the query should look like this example (prepared URL's are removed for better readability):
 
@@ -62,8 +54,16 @@ The result of the query should look like this example (prepared URL's are remove
   <link id="3" source="3" target="4" type="1"/>
   <link id="4" source="4" target="5" type="0"/>
   <link id="5" source="5" target="6" type="0"/>
+  <holiday date="2017-04-04"/>
+  <holiday date="2017-12-25"/>
+  <holiday date="2017-12-26"/>
+  <task_create_url_no_child url="f?p=103328:2:399391190576:::2::"/>
 </data>
 ```
+
+If you need an JSON example please have a look at the file under `sources/plugin-dhtmlxgantt-helper.js` starting around line 130 - there is the sample data defined for the case that no region query is defined.
+
+The following example query runs against demo tables - you can find the used DDL scripts in the subdirectory `plugin/demo-objects`. The shipped demo app in this directory has the scripts also implemented as supporting objects.
 
 ```sql
 WITH tasks AS ( --> START YOUR TASKS QUERY HERE
@@ -115,6 +115,16 @@ WITH tasks AS ( --> START YOUR TASKS QUERY HERE
         ) AS link_xml
     FROM
         plugin_gantt_demo_links --< STOP YOUR LINKS QUERY HERE
+), holidays AS ( --> START YOUR HOLIDAYS QUERY HERE
+    SELECT
+        XMLELEMENT(
+            "holiday",
+            XMLATTRIBUTES(
+                to_char(h_date, 'yyyy-mm-dd') AS "date"
+            )
+        ) AS holiday_xml
+    FROM
+        plugin_gantt_demo_holidays --< STOP YOUR HOLIDAYS QUERY HERE
 ), special_urls AS ( --> START SPECIAL URL's (optional)
     SELECT
         XMLELEMENT(
@@ -136,6 +146,7 @@ WITH tasks AS ( --> START YOUR TASKS QUERY HERE
             "data",
             (SELECT XMLAGG(task_xml) FROM tasks),
             (SELECT XMLAGG(link_xml) FROM links),
+            (SELECT XMLAGG(holiday_xml) FROM holidays),
             (SELECT XMLAGG(special_url_xml) FROM special_urls)
         )
     ) INDENT) AS single_clob_result
@@ -150,9 +161,26 @@ This project uses [semantic versioning][6].
 
 Please use for all comments and discussions the [issues functionality on GitHub][4].
 
+### 0.6.0 (2017-07-24)
+
+- New options regarding non working days - thanks to github.com/GasparYYC for the ideas:
+  - Option to exclude non working days from time calculation - defaults to true
+  - Option to highlight non working days - defaults to true
+  - Option for the highlighting color - defaults to #f4f7f4
+  - You can deliver additional holidays - see example data and query above
+- Fixed: Tasks (or links) deleted from DB are displayed on chart after region refresh - thanks to github.com/S-Marek to report this issue
+- Some small code refactoring
+
+
+### 0.5.1 (2017-03-23)
+
+- correct LOV (100% not always correct displayed)
+- forgotten code fragment in JavaScript plugin helper function
+
+
 ### 0.5.0 (2017-03-14)
 
-* First public release
+- First public release
 
 [1]: https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt/releases/latest
 [2]: https://dhtmlx.com/docs/products/dhtmlxGantt/

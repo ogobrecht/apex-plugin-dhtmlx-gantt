@@ -47,6 +47,16 @@ WITH tasks AS ( --> START YOUR TASKS QUERY HERE
         ) AS link_xml
     FROM
         plugin_gantt_demo_links --< STOP YOUR LINKS QUERY HERE
+), holidays AS ( --> START YOUR HOLIDAYS QUERY HERE
+    SELECT
+        XMLELEMENT(
+            "holiday",
+            XMLATTRIBUTES(
+                to_char(h_date, 'yyyy-mm-dd') AS "date"
+            )
+        ) AS holiday_xml
+    FROM
+        plugin_gantt_demo_holidays --< STOP YOUR HOLIDAYS QUERY HERE
 ), special_urls AS ( --> START SPECIAL URL's (optional)
     SELECT
         XMLELEMENT(
@@ -68,6 +78,7 @@ WITH tasks AS ( --> START YOUR TASKS QUERY HERE
             "data",
             (SELECT XMLAGG(task_xml) FROM tasks),
             (SELECT XMLAGG(link_xml) FROM links),
+            (SELECT XMLAGG(holiday_xml) FROM holidays),
             (SELECT XMLAGG(special_url_xml) FROM special_urls)
         )
     ) INDENT) AS single_clob_result
