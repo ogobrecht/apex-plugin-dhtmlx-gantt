@@ -41,6 +41,7 @@ wwv_flow_api.create_plugin(
 ') RETURN apex_plugin.t_region_render_result IS',
 '    v_region_id       VARCHAR2(100);',
 '    v_chart_container VARCHAR2(100);',
+'    v_extensions      APEX_APPLICATION_GLOBAL.VC_ARR2;',
 'BEGIN',
 '    -- load skin css file',
 '    apex_css.add_file( p_name      => p_region.attribute_04',
@@ -53,6 +54,13 @@ wwv_flow_api.create_plugin(
 '    -- load translation js file',
 '    apex_javascript.add_library( p_name                  => replace(p_region.attribute_05, ''.js'', '''')',
 '                               , p_directory             => p_plugin.file_prefix || ''dhtmlxgantt/locale/'');',
+'                               ',
+'    -- load extensions',
+'    v_extensions := APEX_UTIL.STRING_TO_TABLE(p_region.attribute_17);',
+'    for i in 1..v_extensions.count loop',
+'        apex_javascript.add_library( p_name                  => v_extensions(i)',
+'                                   , p_directory             => p_plugin.file_prefix || ''dhtmlxgantt/ext/'');    ',
+'    end loop;',
 '',
 '    -- load helper js file',
 '    apex_javascript.add_library( p_name                  => ''plugin-dhtmlxgantt-helper''',
@@ -198,9 +206,9 @@ wwv_flow_api.create_plugin(
 ,p_help_text=>'Based on dhtmlxGantt library: https://dhtmlx.com/docs/products/dhtmlxGantt/. This plugin uses the GPLv2 version of the library with a reduced set of functions. If you need all functionality you can buy a Pro version. In the region attributes you can '
 ||'configure some aspects of the Gantt chart - for an example the height, the skin, the UI language (30 different delivered by the vendor). There is also the possibility to place custom before and after initialization JavaScript code. Everything else ca'
 ||'n be done with the extensive JavaScript API available from DHTMLX - please refer to the docs: http://docs.dhtmlx.com/gantt/.'
-,p_version_identifier=>'0.6.0'
+,p_version_identifier=>'0.7.0'
 ,p_about_url=>'https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt'
-,p_files_version=>825
+,p_files_version=>827
 );
 wwv_flow_api.create_plugin_attribute(
  p_id=>wwv_flow_api.id(20699537861700005054)
@@ -945,6 +953,176 @@ wwv_flow_api.create_plugin_attribute(
 ,p_depending_on_expression=>'true'
 ,p_help_text=>'The background color for non working days if highlighting is enabled - default is #f4f7f4.'
 );
+wwv_flow_api.create_plugin_attribute(
+ p_id=>wwv_flow_api.id(21569197235322984705)
+,p_plugin_id=>wwv_flow_api.id(20697749137073622435)
+,p_attribute_scope=>'COMPONENT'
+,p_attribute_sequence=>17
+,p_display_sequence=>135
+,p_prompt=>'Load Extensions'
+,p_attribute_type=>'CHECKBOXES'
+,p_is_required=>false
+,p_is_translatable=>false
+,p_lov_type=>'STATIC'
+,p_examples=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'If you want to have a tooltip for your tasks you have to check the tooltip extension and provide under the "Before init JS code" something like this:',
+'',
+'<pre>',
+'gantt.templates.tooltip_text = function(start, end, task) {',
+'    return "<b>Task:</b> " + task.text + "<br/>" + ',
+'           "<b>Duration:</b> " + task.duration;',
+'};',
+'</pre>'))
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'From the docs: "dhtmlxGantt includes a set of extensions which add extra functionality to the standard behavior. To use an extension, you should include the extension code file on the page. Extensions code files reside in the ext folder of the gantt'''
+||'s codebase."<br><br>',
+'',
+'This plugin is shipped with the needed extension files (see plugin files). By checking the desired extension here the corresponding file is loaded for you. Please keep in mind that some extensions are only working under the PRO version of the library'
+||' and some may be useless in this plugin implementation. I have not taken a final decision here - I have simply provided all available extensions. It is up to you, the developer,  to take these extensions into useful helpers. If you bought a PRO licen'
+||'se you have to copy over your PRO files into the plugin files or relocate the files to your webserver and point the "File prefix" to the new location.<br><br>',
+'',
+'There is an overview article for all extensions: https://docs.dhtmlx.com/gantt/desktop__extensions_list.html'))
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(21569268355508996629)
+,p_plugin_attribute_id=>wwv_flow_api.id(21569197235322984705)
+,p_display_sequence=>10
+,p_display_value=>'Auto Scheduling (PRO version only)'
+,p_return_value=>'dhtmlxgantt_auto_scheduling'
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Allows you to schedule tasks automatically depending on relations between them.<br><br>',
+'',
+'Article: https://docs.dhtmlx.com/gantt/desktop__auto_scheduling.html<br>',
+'API: https://docs.dhtmlx.com/gantt/api__gantt_auto_scheduling_config.html'))
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(21569327277440999587)
+,p_plugin_attribute_id=>wwv_flow_api.id(21569197235322984705)
+,p_display_sequence=>20
+,p_display_value=>'Critical Path (PRO version only)'
+,p_return_value=>'dhtmlxgantt_critical_path'
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Presents a sequence of tasks that can''t be delayed without affecting the whole project''s deadline. The critical path also determines the shortest time the project can take.<br><br>',
+'',
+'Article: https://docs.dhtmlx.com/gantt/desktop__critical_path.html<br>',
+'API: https://docs.dhtmlx.com/gantt/api__gantt_highlight_critical_path_config.html'))
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(21569713074868480809)
+,p_plugin_attribute_id=>wwv_flow_api.id(21569197235322984705)
+,p_display_sequence=>30
+,p_display_value=>'Content Security Policy'
+,p_return_value=>'dhtmlxgantt_csp'
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Allows working with dhtmlxGantt in case Content Security Policy (CSP) is enabled in the application.<br><br>',
+'',
+'Article: https://docs.dhtmlx.com/gantt/desktop__content_security_policy.html'))
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(21569723381025489326)
+,p_plugin_attribute_id=>wwv_flow_api.id(21569197235322984705)
+,p_display_sequence=>40
+,p_display_value=>'Full Screen'
+,p_return_value=>'dhtmlxgantt_fullscreen'
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Displays Gantt in the full screen mode.<br><br>',
+'',
+'Article: https://docs.dhtmlx.com/gantt/desktop__fullscreen_mode.html'))
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(21569758305963497764)
+,p_plugin_attribute_id=>wwv_flow_api.id(21569197235322984705)
+,p_display_sequence=>50
+,p_display_value=>'Grouping (PRO version only)'
+,p_return_value=>'dhtmlxgantt_grouping'
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Allows you to group tasks by any of task attributes.<br><br>',
+'',
+'Article: https://docs.dhtmlx.com/gantt/desktop__grouping.html<br>',
+'API: https://docs.dhtmlx.com/gantt/api__gantt_groupby.html'))
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(21569772730968508023)
+,p_plugin_attribute_id=>wwv_flow_api.id(21569197235322984705)
+,p_display_sequence=>60
+,p_display_value=>'Keyboard Navigation'
+,p_return_value=>'dhtmlxgantt_keyboard_navigation'
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Allows navigating the gantt chart with the help of the keyboard.<br><br>',
+'',
+'Article: https://docs.dhtmlx.com/gantt/desktop__accessibility.html#keyboardnavigation<br>',
+'API: https://docs.dhtmlx.com/gantt/api__gantt_keyboard_navigation_config.html, https://docs.dhtmlx.com/gantt/api__gantt_keyboard_navigation_cells_config.html'))
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(21569869314213522633)
+,p_plugin_attribute_id=>wwv_flow_api.id(21569197235322984705)
+,p_display_sequence=>70
+,p_display_value=>'Vertical Marker'
+,p_return_value=>'dhtmlxgantt_marker'
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Highlights certain dates or date ranges.<br><br>',
+'',
+'Article: https://docs.dhtmlx.com/gantt/desktop__markers.html<br>',
+'API: https://docs.dhtmlx.com/gantt/api__gantt_addmarker.html, https://docs.dhtmlx.com/gantt/api__gantt_show_markers_config.html'))
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(21569977829056153518)
+,p_plugin_attribute_id=>wwv_flow_api.id(21569197235322984705)
+,p_display_sequence=>80
+,p_display_value=>'Multitask Selection'
+,p_return_value=>'dhtmlxgantt_multiselect'
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Allows selecting multiple tasks in Gantt chart at once.<br><br>',
+'',
+'Article: https://docs.dhtmlx.com/gantt/desktop__multiselection.html<br>',
+'API: https://docs.dhtmlx.com/gantt/api__gantt_multiselect_config.html'))
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(21569984504552160394)
+,p_plugin_attribute_id=>wwv_flow_api.id(21569197235322984705)
+,p_display_sequence=>90
+,p_display_value=>'Quick Info'
+,p_return_value=>'dhtmlxgantt_quick_info'
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Provides a popup with a task details.<br><br>',
+'',
+'Article: https://docs.dhtmlx.com/gantt/desktop__touch_templates.html'))
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(21570030899936166550)
+,p_plugin_attribute_id=>wwv_flow_api.id(21569197235322984705)
+,p_display_sequence=>100
+,p_display_value=>'Smart Rendering'
+,p_return_value=>'dhtmlxgantt_smart_rendering'
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Allows enhancing the speed of data rendering while working with big amounts of data.<br><br>',
+'',
+'Article: https://docs.dhtmlx.com/gantt/desktop__performance.html#smartrendering<br>',
+'API: https://docs.dhtmlx.com/gantt/api__gantt_smart_rendering_config.html'))
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(21570038002400553720)
+,p_plugin_attribute_id=>wwv_flow_api.id(21569197235322984705)
+,p_display_sequence=>110
+,p_display_value=>'Tooltip'
+,p_return_value=>'dhtmlxgantt_tooltip'
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Gives the possibility to add extra information for users without overflowing the screen with the text.<br><br>',
+'',
+'Article: https://docs.dhtmlx.com/gantt/desktop__tooltips.html'))
+);
+wwv_flow_api.create_plugin_attr_value(
+ p_id=>wwv_flow_api.id(21570063586280178157)
+,p_plugin_attribute_id=>wwv_flow_api.id(21569197235322984705)
+,p_display_sequence=>120
+,p_display_value=>'Undo'
+,p_return_value=>'dhtmlxgantt_undo'
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'Allows you to undo/redo the made changes.<br><br>',
+'',
+'Article: https://docs.dhtmlx.com/gantt/desktop__undo_redo.html<br>',
+'API: https://docs.dhtmlx.com/gantt/api__gantt_undo_config.html, https://docs.dhtmlx.com/gantt/api__gantt_redo_config.html'))
+);
 wwv_flow_api.create_plugin_std_attribute(
  p_id=>wwv_flow_api.id(20697749501838639740)
 ,p_plugin_id=>wwv_flow_api.id(20697749137073622435)
@@ -1105,9 +1283,9 @@ end;
 /
 begin
 wwv_flow_api.g_varchar2_table := wwv_flow_api.empty_varchar2_table;
-wwv_flow_api.g_varchar2_table(1) := '2F2A2A0A202A204F7261636C65204150455820706C7567696E206468746D6C7847616E74742068656C706572202D2076302E362E30202D20323031372D30372D32340A202A2068747470733A2F2F6769746875622E636F6D2F6F676F6272656368742F61';
+wwv_flow_api.g_varchar2_table(1) := '2F2A2A0A202A204F7261636C65204150455820706C7567696E206468746D6C7847616E74742068656C706572202D2076302E372E30202D20323031372D30382D30320A202A2068747470733A2F2F6769746875622E636F6D2F6F676F6272656368742F61';
 wwv_flow_api.g_varchar2_table(2) := '7065782D706C7567696E2D6468746D6C782D67616E74740A202A20436F70797269676874202863292032303137204F74746D617220476F627265636874202D2047504C7632206C6963656E73650A202A2F0A77696E646F772E706C7567696E5F6468746D';
-wwv_flow_api.g_varchar2_table(3) := '6C7847616E74743D7B7D2C706C7567696E5F6468746D6C7847616E74742E76657273696F6E3D22302E362E30222C706C7567696E5F6468746D6C7847616E74742E696E69743D66756E6374696F6E28297B706C7567696E5F6468746D6C7847616E74742E';
+wwv_flow_api.g_varchar2_table(3) := '6C7847616E74743D7B7D2C706C7567696E5F6468746D6C7847616E74742E76657273696F6E3D22302E372E30222C706C7567696E5F6468746D6C7847616E74742E696E69743D66756E6374696F6E28297B706C7567696E5F6468746D6C7847616E74742E';
 wwv_flow_api.g_varchar2_table(4) := '726567696F6E4964456C656D656E743D617065782E6A5175657279282223222B706C7567696E5F6468746D6C7847616E74742E726567696F6E4964292C706C7567696E5F6468746D6C7847616E74742E6368617274436F6E7461696E65724964456C656D';
 wwv_flow_api.g_varchar2_table(5) := '656E743D617065782E6A5175657279282223222B706C7567696E5F6468746D6C7847616E74742E6368617274436F6E7461696E65724964292C706C7567696E5F6468746D6C7847616E74742E726567696F6E4964456C656D656E742E62696E6428226170';
 wwv_flow_api.g_varchar2_table(6) := '657872656672657368222C66756E6374696F6E28297B706C7567696E5F6468746D6C7847616E74742E6C6F616428297D292C706C7567696E5F6468746D6C7847616E74742E706167654974656D73546F5375626D69743D2222213D3D706C7567696E5F64';
@@ -19630,9 +19808,9 @@ end;
 /
 begin
 wwv_flow_api.g_varchar2_table := wwv_flow_api.empty_varchar2_table;
-wwv_flow_api.g_varchar2_table(1) := '2F2A2A0A202A204F7261636C65204150455820706C7567696E206468746D6C7847616E74742068656C706572202D2076302E362E30202D20323031372D30372D32340A202A2068747470733A2F2F6769746875622E636F6D2F6F676F6272656368742F61';
+wwv_flow_api.g_varchar2_table(1) := '2F2A2A0A202A204F7261636C65204150455820706C7567696E206468746D6C7847616E74742068656C706572202D2076302E372E30202D20323031372D30382D30320A202A2068747470733A2F2F6769746875622E636F6D2F6F676F6272656368742F61';
 wwv_flow_api.g_varchar2_table(2) := '7065782D706C7567696E2D6468746D6C782D67616E74740A202A20436F70797269676874202863292032303137204F74746D617220476F627265636874202D2047504C7632206C6963656E73650A202A2F0A0A77696E646F772E706C7567696E5F646874';
-wwv_flow_api.g_varchar2_table(3) := '6D6C7847616E7474203D207B7D3B0A706C7567696E5F6468746D6C7847616E74742E76657273696F6E203D2022302E362E30223B0A0A706C7567696E5F6468746D6C7847616E74742E696E6974203D2066756E6374696F6E2829207B0A0A202020202F2F';
+wwv_flow_api.g_varchar2_table(3) := '6D6C7847616E7474203D207B7D3B0A706C7567696E5F6468746D6C7847616E74742E76657273696F6E203D2022302E372E30223B0A0A706C7567696E5F6468746D6C7847616E74742E696E6974203D2066756E6374696F6E2829207B0A0A202020202F2F';
 wwv_flow_api.g_varchar2_table(4) := '637265617465206A5175657279206F626A6563747320666F7220726567696F6E20494420616E6420636861727420636F6E7461696E6572204944202873656520616C736F20706C7567696E20706C2F73716C20736F75726365290A20202020706C756769';
 wwv_flow_api.g_varchar2_table(5) := '6E5F6468746D6C7847616E74742E726567696F6E4964456C656D656E74203D20617065782E6A517565727928222322202B20706C7567696E5F6468746D6C7847616E74742E726567696F6E4964293B0A20202020706C7567696E5F6468746D6C7847616E';
 wwv_flow_api.g_varchar2_table(6) := '74742E6368617274436F6E7461696E65724964456C656D656E74203D20617065782E6A517565727928222322202B20706C7567696E5F6468746D6C7847616E74742E6368617274436F6E7461696E65724964293B0A0A202020202F2F7265676973746572';

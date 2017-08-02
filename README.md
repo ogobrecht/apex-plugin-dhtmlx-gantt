@@ -6,7 +6,7 @@
   * This is the GPLv2 version of the library with a reduced set of functions
   * If you need all functionality you can buy a Pro version
   * I was asked to create this plugin and I have nothing to do with the company DHTMLX, so please do not complain ;-)
-* Currently supported is only APEX 5.1
+* Minimum supported APEX version is 5.1
 * Features of the APEX integration:
   * Data can be delivered as XML (string) or JSON (string or object)
     * For the XML format there is an own parser integrated to support easy SQL queries - see example below
@@ -160,6 +160,11 @@ FROM
 This project uses [semantic versioning][6].
 
 Please use for all comments and discussions the [issues functionality on GitHub][4].
+
+### 0.7.0 (2017-08-02)
+
+- New option: It is now possible to load the needed files for up to 12 extension like tooltips and other stuff - check out also the help in the attributes of a Gantt region - thanks to github.com/ShantveerS to show me this missing feature
+
 
 ### 0.6.0 (2017-07-24)
 
