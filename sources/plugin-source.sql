@@ -5,6 +5,7 @@ FUNCTION dhtmlx_gantt_render (
 ) RETURN apex_plugin.t_region_render_result IS
     v_region_id       VARCHAR2(100);
     v_chart_container VARCHAR2(100);
+    v_extensions      APEX_APPLICATION_GLOBAL.VC_ARR2;
 BEGIN
     -- load skin css file
     apex_css.add_file( p_name      => p_region.attribute_04
@@ -17,6 +18,13 @@ BEGIN
     -- load translation js file
     apex_javascript.add_library( p_name                  => replace(p_region.attribute_05, '.js', '')
                                , p_directory             => p_plugin.file_prefix || 'dhtmlxgantt/locale/');
+
+    -- load extensions
+    v_extensions := APEX_UTIL.STRING_TO_TABLE(p_region.attribute_17);
+    for i in 1..v_extensions.count loop
+        apex_javascript.add_library( p_name                  => v_extensions(i)
+                                   , p_directory             => p_plugin.file_prefix || 'dhtmlxgantt/ext/');
+    end loop;
 
     -- load helper js file
     apex_javascript.add_library( p_name                  => 'plugin-dhtmlxgantt-helper'
