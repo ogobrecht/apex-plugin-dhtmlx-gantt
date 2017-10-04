@@ -1,4 +1,4 @@
-[Download latest version][1] | [Online demo app][5] | [Issues][4]
+[Download latest version][1] | [Online demo app][5] | [Wiki][7] | [Issues][4]
 
 # Oracle APEX Region Type Plugin: dhtmlxGantt
 
@@ -193,3 +193,4 @@ Please use for all comments and discussions the [issues functionality on GitHub]
 [4]: https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt/issues
 [5]: https://apex.oracle.com/pls/apex/f?p=116612
 [6]: http://semver.org
+[7]: https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt/wiki
