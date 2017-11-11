@@ -161,6 +161,12 @@ This project uses [semantic versioning][6].
 
 Please use for all comments and discussions the [issues functionality on GitHub][4].
 
+
+### 0.8.0 (2017-11-xx) Work in progress
+
+- New language Persian: Thanks to meysam khashie for the translation and to ask for including it into the plugin
+
+
 ### 0.7.0 (2017-08-02)
 
 - New option: It is now possible to load the needed files for up to 12 extension like tooltips and other stuff - check out also the help in the attributes of a Gantt region - thanks to github.com/ShantveerS to show me this missing feature
