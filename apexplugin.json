@@ -1,6 +1,6 @@
 {
   "name" : "dhtmlxGantt",
-  "version" : "0.7.0",
+  "version" : "0.8.0",
   "description" : "HTML5 gantt chart based on a dhtmlx.com library",
   "keywords" : ["JavaScript", "chart", "gantt"],
   "homepage" : "https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt",

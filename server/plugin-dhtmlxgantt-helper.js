@@ -1,11 +1,11 @@
 /**
- * Oracle APEX plugin dhtmlxGantt helper - v0.7.0 - 2017-08-02
+ * Oracle APEX plugin dhtmlxGantt helper - v0.8.0 - 2017-11-13
  * https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt
  * Copyright (c) 2017 Ottmar Gobrecht - GPLv2 license
  */
 
 window.plugin_dhtmlxGantt = {};
-plugin_dhtmlxGantt.version = "0.7.0";
+plugin_dhtmlxGantt.version = "0.8.0";
 
 plugin_dhtmlxGantt.init = function() {
 
