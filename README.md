@@ -162,24 +162,24 @@ This project uses [semantic versioning][6].
 Please use for all comments and discussions the [issues functionality on GitHub][4].
 
 
-### 0.8.0 (2017-11-xx) Work in progress
+### 0.8.0 (2017-11-13)
 
-- New language Persian: Thanks to meysam khashie for the translation and to ask for including it into the plugin
+- New language Persian: Thanks to [meysam khashie](https://telegram.me/meysammkw) for the translation and to ask for including it into the plugin
 
 
 ### 0.7.0 (2017-08-02)
 
-- New option: It is now possible to load the needed files for up to 12 extension like tooltips and other stuff - check out also the help in the attributes of a Gantt region - thanks to github.com/ShantveerS to show me this missing feature
+- New option: It is now possible to load the needed files for up to 12 extension like tooltips and other stuff - check out also the help in the attributes of a Gantt region - thanks to [ShantveerS](https://github.com/ShantveerS) to show me this missing feature
 
 
 ### 0.6.0 (2017-07-24)
 
-- New options regarding non working days - thanks to github.com/GasparYYC for the ideas:
+- New options regarding non working days - thanks to [GasparYYC](https://github.com/GasparYYC) for the ideas:
   - Option to exclude non working days from time calculation - defaults to true
   - Option to highlight non working days - defaults to true
   - Option for the highlighting color - defaults to #f4f7f4
   - You can deliver additional holidays - see example data and query above
-- Fixed: Tasks (or links) deleted from DB are displayed on chart after region refresh - thanks to github.com/S-Marek to report this issue
+- Fixed: Tasks (or links) deleted from DB are displayed on chart after region refresh - thanks to [S-Marek](https://github.com/S-Marek) to report this issue
 - Some small code refactoring
 
 
