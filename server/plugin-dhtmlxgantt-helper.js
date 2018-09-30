@@ -1,11 +1,11 @@
 /**
- * Oracle APEX plugin dhtmlxGantt helper - v0.8.0 - 2017-11-13
+ * Oracle APEX plugin dhtmlxGantt helper - v0.9.0 - 2018-09-30
  * https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt
- * Copyright (c) 2017 Ottmar Gobrecht - GPLv2 license
+ * Copyright (c) 2017-2018 Ottmar Gobrecht - GPLv2 license
  */
 
 window.plugin_dhtmlxGantt = {};
-plugin_dhtmlxGantt.version = "0.8.0";
+plugin_dhtmlxGantt.version = "0.9.0";
 
 plugin_dhtmlxGantt.init = function() {
 
@@ -270,16 +270,9 @@ plugin_dhtmlxGantt.parse = function(data) {
         }
         //correct data types
         plugin_dhtmlxGantt.dataParsed.data.forEach(function(t) {
-            t.id = parseInt(t.id);
             t.progress = parseFloat(t.progress);
             t.duration = parseFloat(t.duration);
-            t.parent = parseInt(t.parent);
             t.open = plugin_dhtmlxGantt.util_parseBool(t.open);
-        });
-        plugin_dhtmlxGantt.dataParsed.links.forEach(function(l) {
-            l.id = parseInt(l.id);
-            l.source = parseInt(l.source);
-            l.target = parseInt(l.target);
         });
         //add holidays to gantt config
         if (plugin_dhtmlxGantt.dataParsed.holidays && plugin_dhtmlxGantt.dataParsed.holidays.length > 0) {

@@ -113,7 +113,7 @@ BEGIN
          DECLARE
             v_len PLS_INTEGER;
             v_pos PLS_INTEGER := 1;
-            v_amo PLS_INTEGER := 12000;
+            v_amo PLS_INTEGER := 8000;
             v_chu VARCHAR2( 32767 );
          BEGIN
             v_len := DBMS_LOB.getlength( v_clob );

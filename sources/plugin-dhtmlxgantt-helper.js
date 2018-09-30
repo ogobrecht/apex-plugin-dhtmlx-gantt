@@ -264,16 +264,9 @@ plugin_dhtmlxGantt.parse = function(data) {
         }
         //correct data types
         plugin_dhtmlxGantt.dataParsed.data.forEach(function(t) {
-            t.id = parseInt(t.id);
             t.progress = parseFloat(t.progress);
             t.duration = parseFloat(t.duration);
-            t.parent = parseInt(t.parent);
             t.open = plugin_dhtmlxGantt.util_parseBool(t.open);
-        });
-        plugin_dhtmlxGantt.dataParsed.links.forEach(function(l) {
-            l.id = parseInt(l.id);
-            l.source = parseInt(l.source);
-            l.target = parseInt(l.target);
         });
         //add holidays to gantt config
         if (plugin_dhtmlxGantt.dataParsed.holidays && plugin_dhtmlxGantt.dataParsed.holidays.length > 0) {
