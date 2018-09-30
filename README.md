@@ -162,6 +162,11 @@ This project uses [semantic versioning][6].
 Please use for all comments and discussions the [issues functionality on GitHub][4].
 
 
+### 0.9.0 (2018-09-30)
+
+- Switch internal handling of task ID's from integer to string - thanks to github.com/flunanica to remind me that not all data models use number data types for their identifiers...
+
+
 ### 0.8.0 (2017-11-13)
 
 - New language Persian: Thanks to [meysam khashie](https://telegram.me/meysammkw) for the translation and to ask for including it into the plugin
