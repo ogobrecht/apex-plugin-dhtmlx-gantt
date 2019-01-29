@@ -2,9 +2,10 @@
 
 # Oracle APEX Region Type Plugin: dhtmlxGantt
 
-* Based on [dhtmlxGantt][2] ([docs][3]) library
+* Based on [dhtmlxGantt][2] ([docs][3]) library (v4.1.0, newer version available from the vendor)
   * This is the GPLv2 version of the library with a reduced set of functions
-  * If you need all functionality you can buy a Pro version
+    * [Compare the free and the Pro version][compare]
+  * If you need all functionality you can buy the Pro version and copy the Pro files into the plugin
   * I was asked to create this plugin and I have nothing to do with the company DHTMLX, so please do not complain ;-)
 * Minimum supported APEX version is 5.1
 * Features of the APEX integration:
@@ -205,3 +206,4 @@ Please use for all comments and discussions the [issues functionality on GitHub]
 [5]: https://apex.oracle.com/pls/apex/f?p=116612
 [6]: http://semver.org
 [7]: https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt/wiki
+[compare]: https://docs.dhtmlx.com/gantt/desktop__editions_comparison.html
