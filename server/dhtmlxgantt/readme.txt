@@ -1,24 +1,52 @@
-/*
-@license
+DHTMLX Gantt
+============
 
-dhtmlxGantt v.4.1.0 Stardard
-This software is covered by GPL license. You also can obtain Commercial or Enterprise license to use it in non-GPL project - please contact sales@dhtmlx.com. Usage without proper license is prohibited.
+Version 7.0.10, Standard Edition
 
-(c) Dinamenta, UAB.
-*/
 
+License
+------------
+
+GPL-2.0 License, check license.txt for more details
+
+
+How to start
+------------
+
+- check our how-to-start tutorials https://docs.dhtmlx.com/gantt/desktop__howtostart_guides.html
+- explore code samples https://docs.dhtmlx.com/gantt/samples/
+
+
+How to run samples
+------------
+
+All the samples except for a few that explicitly require a REST backend api can be opened as static files.
+
+Running the backend:
+
+- `npm install` or `yarn install`
+- `npm start` or `yarn start`
+- go to `http://localhost:9200`
+
+or
+
+- copy `codebase` and `samples` folders of the package to your Apache/nginx directory and open samples as static html pages. Demos that require RESTful backend will not work in that case.
+
+Package structure
+------------
+
+- ./codebase - css and javascript files of the library
+- ./samples - code samples
+- ./backend - a simple node backend to run samples
 
 Useful links
 -------------
 
-- Online  documentation
-	http://docs.dhtmlx.com/gantt/
+- Product information
+	https://dhtmlx.com/docs/products/dhtmlxGantt/
 
-- Downloadable documentation
-	CHM version
-		http://dhtmlx.com/x/download/regular/dhtmlxgantt_chm.zip
-	HTML version
-		http://dhtmlx.com/x/download/regular/dhtmlxgantt_docs_html.zip
-	
+- Online documentation
+	https://docs.dhtmlx.com/gantt/
+
 - Support forum
-	http://forum.dhtmlx.com/viewforum.php?f=15
+	https://forum.dhtmlx.com/c/gantt
