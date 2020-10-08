@@ -6,45 +6,56 @@ FUNCTION dhtmlx_gantt_render (
     v_region_id       VARCHAR2(100);
     v_chart_container VARCHAR2(100);
     v_extensions      APEX_APPLICATION_GLOBAL.VC_ARR2;
+    v_extensions_js   VARCHAR2(4000);
 BEGIN
+    -- load gantt library css file
+    apex_css.add_file( p_name      => 'dhtmlxgantt'
+                     , p_directory => p_plugin.file_prefix || 'dhtmlxgantt/codebase/');
+
     -- load skin css file
     apex_css.add_file( p_name      => p_region.attribute_04
-                     , p_directory => p_plugin.file_prefix || 'dhtmlxgantt/');
+                     , p_directory => p_plugin.file_prefix || 'dhtmlxgantt/codebase/skins/');
 
     -- load gantt library js file
     apex_javascript.add_library( p_name                  => 'dhtmlxgantt'
-                               , p_directory             => p_plugin.file_prefix || 'dhtmlxgantt/');
+                               , p_directory             => p_plugin.file_prefix || 'dhtmlxgantt/codebase/');
 
-    -- load translation js file
-    apex_javascript.add_library( p_name                  => replace(p_region.attribute_05, '.js', '')
-                               , p_directory             => p_plugin.file_prefix || 'dhtmlxgantt/locale/');
-
-    -- load extensions
-    v_extensions := APEX_UTIL.STRING_TO_TABLE(p_region.attribute_17);
-    for i in 1..v_extensions.count loop
-        apex_javascript.add_library( p_name                  => v_extensions(i)
-                                   , p_directory             => p_plugin.file_prefix || 'dhtmlxgantt/ext/');
-    end loop;
-
-    -- load helper js file
+    -- load plugin helper js file
     apex_javascript.add_library( p_name                  => 'plugin-dhtmlxgantt-helper'
                                , p_directory             => p_plugin.file_prefix
                                , p_check_to_add_minified => TRUE );
 
+    -- prepare code for extensions
+    v_extensions := APEX_UTIL.STRING_TO_TABLE(p_region.attribute_17);
+    for i in 1..v_extensions.count loop
+        v_extensions_js := v_extensions_js || 'gantt.plugins({ ' || v_extensions(i) || ': true });';
+    end loop;
 
     -- prepare chart container
     v_region_id := apex_plugin_util.escape( p_region.static_id, true);
     v_chart_container := v_region_id || '_dhtmlxGantt';
-    htp.p( '<a class="dhtmlxgantt-open-url-helper" style="display:none;"></a>' ||
-        '<div id="'|| v_chart_container || '" style="width:100%; height:' || nvl(p_region.attribute_01,500) || 'px;"></div>' );
+    htp.p( '
+<style> 
+.gantt_task_cell.no_work_time {background-color: #F5F5F5;}
+.gantt_task_row.gantt_selected .gantt_task_cell.no_work_time {background-color: #F8EC9C;}
+</style>
+<a class="dhtmlxgantt-open-url-helper" style="display:none;"></a>
+<div id="'|| v_chart_container || '" style="width:100%; height:' || nvl(p_region.attribute_01,500) || 'px;"></div>
+');
 
     apex_javascript.add_onload_code( '
+/* config plugin */
 plugin_dhtmlxGantt.pluginId = "' || apex_plugin.get_ajax_identifier || '";
 plugin_dhtmlxGantt.regionId = "' || v_region_id || '";
 plugin_dhtmlxGantt.chartContainerId = "' || v_chart_container || '";
 plugin_dhtmlxGantt.pageItemsToSubmit = "' || p_region.ajax_items_to_submit || '";
 plugin_dhtmlxGantt.queryDefined = ' || case when p_region.source is null then 'false' else 'true' end || ';
+
+/* config gantt chart */
+' || v_extensions_js || '
+gantt.i18n.setLocale("' || p_region.attribute_05 || '");
 gantt.config.xml_date = "%Y-%m-%d";
+gantt.config.scale_unit = "day";
 gantt.config.show_grid = ' || p_region.attribute_06 || ';
 gantt.config.show_task_cells = ' || p_region.attribute_09 || ';
 gantt.config.show_links = ' || p_region.attribute_07 || ';
@@ -54,26 +65,37 @@ gantt.config.drag_progress = ' || p_region.attribute_11 || ';
 gantt.config.drag_resize = ' || p_region.attribute_12 || ';
 gantt.config.drag_links = ' || p_region.attribute_13 || ';
 gantt.config.work_time = ' || p_region.attribute_14 || ';
-' || case when p_region.attribute_15 = 'true' then ' /* highlight weekends */
-gantt.templates.task_cell_class = function(task, date){
-    if ( gantt.config.scale_unit === "day" && !gantt.isWorkTime(date) ) return "no_work_time";
-    return "";
+gantt.config.rtl = ' || p_region.attribute_18 || ';
+
+/* highlight weekends */
+' || case when p_region.attribute_15 = 'true' then '
+gantt.templates.timeline_cell_class = function(task, date){
+    if ( gantt.config.scale_unit === "day" && !gantt.isWorkTime(date) ) {
+        return "no_work_time";
+    } else {
+        return "";
+    }
 };
 gantt.templates.scale_cell_class = function(date){
-    if ( gantt.config.scale_unit === "day" && !gantt.isWorkTime(date) ) return "no_work_time";
-    return "";
+    if ( gantt.config.scale_unit === "day" && !gantt.isWorkTime(date) ) {
+        return "no_work_time";
+    } else {
+        return "";
+    }
 };
 ' else null end || '
+
 /* before init JS code */
 ' || p_region.attribute_02 || '
+
+/* init gantt chart */
 gantt.init("' || v_chart_container || '");
+
 /* after init JS code */
 ' || p_region.attribute_03 || '
+
+/* init plugin */
 plugin_dhtmlxGantt.init();
-/* add additional styles for non working days - skin dependend: must run after first render cycle */
-apex.jQuery("body").prepend("<style> .gantt_scale_cell.no_work_time, .gantt_task_cell.no_work_time {background-color:'
-  || nvl(p_region.attribute_16,'#f4f7f4') ||
-';} .gantt_selected .gantt_scale_cell.no_work_time, .gantt_selected .gantt_task_cell.no_work_time {background-color:transparent;} .gantt_scale_cell.no_work_time {border-bottom: 1px solid " + apex.jQuery(".gantt_task_scale:first").css("border-bottom-color") + ";} </style>");
 ');
     RETURN NULL;
     --
@@ -113,7 +135,7 @@ BEGIN
          DECLARE
             v_len PLS_INTEGER;
             v_pos PLS_INTEGER := 1;
-            v_amo PLS_INTEGER := 8000;
+            v_amo PLS_INTEGER := 12000;
             v_chu VARCHAR2( 32767 );
          BEGIN
             v_len := DBMS_LOB.getlength( v_clob );
