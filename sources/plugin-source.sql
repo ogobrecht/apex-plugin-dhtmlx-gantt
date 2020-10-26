@@ -54,6 +54,7 @@ plugin_dhtmlxGantt.queryDefined = ' || case when p_region.source is null then 'f
 /* config gantt chart */
 ' || v_extensions_js || '
 gantt.i18n.setLocale("' || p_region.attribute_05 || '");
+gantt.config.date_format = "%Y-%m-%d %H:%i";
 gantt.config.xml_date = "%Y-%m-%d";
 gantt.config.scale_unit = "day";
 gantt.config.show_grid = ' || p_region.attribute_06 || ';

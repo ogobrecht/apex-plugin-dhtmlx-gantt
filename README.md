@@ -2,7 +2,7 @@
 
 # Oracle APEX Region Type Plugin: dhtmlxGantt
 
-* Based on [dhtmlxGantt][2] ([docs][3]) library (v4.1.0, newer version available from the vendor)
+* Based on [dhtmlxGantt][2] ([docs][3]) library (v7.0.10)
   * This is the GPLv2 version of the library with a reduced set of functions
     * [Compare the free and the Pro version][compare]
   * If you need all functionality you can buy the Pro version and copy the Pro files into the plugin
@@ -22,8 +22,10 @@
 ### The Recommended Way
 
 1. Download the [latest version][1]
-2. Go to subdirectory `plugin/demo-objects` and install demo-app-including-supporting-objects.sql
+2. Go to subdirectory `plugin/demo-objects` for a demo app including supporting objects 
 3. Run the demo app and inspect, how it was implemented
+
+Notes: Demo app is for APEX 20.2, sorry... try it on apex.oracle.com. Plug-in is still for APEX 5.1.4+ (downgrade was made with a diff tool comparing with an old plug-in version).
 
 ### The DIY Way
 
@@ -32,6 +34,7 @@
 3. On your page create a new region of type `dhtmlxGantt [Plug-In]`
 4. Optionally provide a query to load data from your tables
    * If you provide no query, then the plugin will provide sample data
+   * For an example query see the inline help in APEX, `plugin/demo-objects/demo-query.sql` or the following section
 
 
 ### Example Query
@@ -161,6 +164,13 @@ FROM
 This project uses [semantic versioning][6].
 
 Please use for all comments and discussions the [issues functionality on GitHub][4].
+
+### 0.10.0 (2020-10-26)
+
+- Update to dhtmlx Gantt library version 7.0.10
+- You need to revisit your Gantt region attributes because of breaking changes (previous library version was 4.1.0)
+- New: Support for RTL languages
+- New: Skin Material
 
 
 ### 0.9.0 (2018-09-30)
