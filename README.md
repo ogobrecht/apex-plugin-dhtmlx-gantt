@@ -2,7 +2,7 @@
 
 # Oracle APEX Region Type Plugin: dhtmlxGantt
 
-* Based on [dhtmlxGantt][2] ([docs][3]) library (v7.0.10)
+* Based on [dhtmlxGantt][2] ([docs][3]) library (v7.0.11)
   * This is the GPLv2 version of the library with a reduced set of functions
     * [Compare the free and the Pro version][compare]
   * If you need all functionality you can buy the Pro version and copy the Pro files into the plugin
@@ -164,6 +164,12 @@ FROM
 This project uses [semantic versioning][6].
 
 Please use for all comments and discussions the [issues functionality on GitHub][4].
+
+### 0.11.0 (2020-12-xx)
+
+- Update to dhtmlx Gantt library version 7.0.11
+- New: Attribute "After Refresh JS Code" for things which needs to run after each refresh of the region like adding vertical markers - thanks to [Jochen](https://github.com/jzzh) for the hint and sorry for the delay
+
 
 ### 0.10.0 (2020-10-26)
 
