@@ -165,7 +165,7 @@ This project uses [semantic versioning][6].
 
 Please use for all comments and discussions the [issues functionality on GitHub][4].
 
-### 0.11.0 (2020-12-xx)
+### 0.11.0 (2020-12-09)
 
 - Update to dhtmlx Gantt library version 7.0.11
 - New: Attribute "After Refresh JS Code" for things which needs to run after each refresh of the region like adding vertical markers - thanks to [Jochen](https://github.com/jzzh) for the hint and sorry for the delay
