@@ -291,6 +291,8 @@ plugin_dhtmlxGantt.parse = function(data) {
             plugin_dhtmlxGantt.util_logError("vendor base library was unable to use your data: " + e.message);
         }
     }
+    //call user specified "After Refresh JS Code"
+    plugin_dhtmlxGantt.afterRefreshCode();
     //trigger event, so that other dynamic actions registered on this event are called
     apex.event.trigger(plugin_dhtmlxGantt.regionIdElement, "apexafterrefresh");
 };

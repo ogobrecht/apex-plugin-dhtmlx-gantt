@@ -1,11 +1,11 @@
 /**
- * Oracle APEX plugin dhtmlxGantt helper - v0.9.0 - 2018-09-30
+ * Oracle APEX plugin dhtmlxGantt helper - v0.11.0 - 2020-11-30
  * https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt
- * Copyright (c) 2017-2018 Ottmar Gobrecht - GPLv2 license
+ * Copyright (c) 2017-2020 Ottmar Gobrecht - GPLv2 license
  */
 
 window.plugin_dhtmlxGantt = {};
-plugin_dhtmlxGantt.version = "0.9.0";
+plugin_dhtmlxGantt.version = "0.11.0";
 
 plugin_dhtmlxGantt.init = function() {
 
@@ -297,6 +297,8 @@ plugin_dhtmlxGantt.parse = function(data) {
             plugin_dhtmlxGantt.util_logError("vendor base library was unable to use your data: " + e.message);
         }
     }
+    //call user specified "After Refresh JS Code"
+    plugin_dhtmlxGantt.afterRefreshCode();
     //trigger event, so that other dynamic actions registered on this event are called
     apex.event.trigger(plugin_dhtmlxGantt.regionIdElement, "apexafterrefresh");
 };

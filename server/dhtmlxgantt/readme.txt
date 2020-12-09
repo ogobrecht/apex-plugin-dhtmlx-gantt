@@ -1,7 +1,7 @@
 DHTMLX Gantt
 ============
 
-Version 7.0.10, Standard Edition
+Version 7.0.11, Standard Edition
 
 
 License
