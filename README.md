@@ -1,41 +1,40 @@
-[Download latest version][1] | [Online demo app][5] | [Wiki][7] | [Issues][4]
+[Download latest version](https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt/releases/latest) |
+[Online demo app](https://apex.oracle.com/pls/apex/ogobrecht/r/playground/gantt-chart) |
+[Wiki](https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt/wiki) |
+[Issues](https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt/issues)
 
 # Oracle APEX Region Type Plugin: dhtmlxGantt
 
-* Based on [dhtmlxGantt][2] ([docs][3]) library (v7.0.11)
-  * This is the GPLv2 version of the library with a reduced set of functions
-    * [Compare the free and the Pro version][compare]
-  * If you need all functionality you can buy the Pro version and copy the Pro files into the plugin
-  * I was asked to create this plugin and I have nothing to do with the company DHTMLX, so please do not complain ;-)
-* Minimum supported APEX version is 5.1
-* Features of the APEX integration:
-  * Data can be delivered as XML (string) or JSON (string or object)
-    * For the XML format there is an own parser integrated to support easy SQL queries - see example below
-  * The plugin delivers sample data, if no query is defined
-  * There are five events available to react on chart actions: Task Create, Task Double Click, Task Drag (change of progress, start date, duration), Link Create, Link Double Click
-  * In the region attributes you can configure some aspects of the Gantt chart - for an example the height, the skin, the UI language (30 different delivered by the vendor); There is also the possibility to place custom before and after initialization JavaScript code
-  * Everything else can be done with the extensive JavaScript API available from DHTMLX - please refer to the [docs][3]
+- Based on [DHTMLX Gantt](https://dhtmlx.com/docs/products/dhtmlxGantt/) library v7.0.11 ([docs](http://docs.dhtmlx.com/gantt/))
+- This is the GPLv2 version of the library with a reduced set of functions - [Compare the free and the Pro version](https://docs.dhtmlx.com/gantt/desktop__editions_comparison.html)
+- If you need all functionality you can buy the Pro version and copy the Pro files into the plugin
+- "Export to PDF" functionality with the help of DHTMLX internet API (watermark without PRO version) - [more infos here...](https://docs.dhtmlx.com/gantt/desktop__export.html#exporttopdf)
+- Minimum supported APEX version for the plug-in is 5.1
+- Data can be delivered as XML (string) or JSON (string or object)
+- The plugin delivers sample data, if no query is defined
+- There are five events available to react on chart actions: Task Create, Task Double Click, Task Drag (change of progress, start date, duration), Link Create, Link Double Click
+- In the region attributes you can configure some aspects of the Gantt chart - for an example the height, the skin, the UI language (30 different delivered by the vendor); There is also the possibility to place custom before and after initialization JavaScript code
+- Everything else can be done with the extensive JavaScript API available from DHTMLX - [please refer to the docs](http://docs.dhtmlx.com/gantt/)
 
+## You need to understand this
+
+- The whole idea of the plug-in ist to integrate the Gantt JavaScript library and to expose relevant events to be able to use standard APEX modal dialogs to edit the tasks and links
+- The downside of this is, that you need to work with the event data to open your modal dialogs and that you need to prepare your URLs somewhere
+- You can prepare the edit URLs beforehand in the region SQL
+- When you change data by interacting with the graph you need to prepare the URL with a dynamic action
+- It is highly recommendet to install the demo app and inspect the implementation details:
+  - Open the [online demo app](https://apex.oracle.com/pls/apex/ogobrecht/r/playground/gantt-chart)
+  - Download it as it is (top right navigation menu, under the question mark)
+  - Install it in your own APEX instance or [apex.oracle.com](https://apex.oracle.com/), if your instance has not the same version as [apex.oracle.com](https://apex.oracle.com/)
 
 ## How To Use
 
-### The Recommended Way
-
-1. Download the [latest version][1]
-2. Go to subdirectory `plugin/demo-objects` for a demo app including supporting objects 
-3. Run the demo app and inspect, how it was implemented
-
-Notes: Demo app is for APEX 20.2, sorry... try it on apex.oracle.com. Plug-in is still for APEX 5.1.4+ (downgrade was made with a diff tool comparing with an old plug-in version).
-
-### The DIY Way
-
-1. Download the [latest version][1]
+1. Download the [latest version](https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt/releases/latest)
 2. Install the plugin from the subdirectory `plugin`
 3. On your page create a new region of type `dhtmlxGantt [Plug-In]`
-4. Optionally provide a query to load data from your tables
-   * If you provide no query, then the plugin will provide sample data
-   * For an example query see the inline help in APEX, `plugin/demo-objects/demo-query.sql` or the following section
-
+4. Provide a query to load data from your tables
+   - If you provide no query, then the plugin will provide sample data
+   - For an example query see the inline help in APEX, `plugin/demo-objects/demo-query.sql` or the following section
 
 ### Example Query
 
@@ -67,7 +66,7 @@ The result of the query should look like this example (prepared URL's are remove
 
 If you need an JSON example please have a look at the file under `sources/plugin-dhtmlxgantt-helper.js` starting around line 130 - there is the sample data defined for the case that no region query is defined.
 
-The following example query runs against demo tables - you can find the used DDL scripts in the subdirectory `plugin/demo-objects`. The shipped demo app in this directory has the scripts also implemented as supporting objects.
+The following example query runs against demo tables as delivered with the supporting objects of the demo app:
 
 ```sql
 WITH tasks AS ( --> START YOUR TASKS QUERY HERE
@@ -161,9 +160,13 @@ FROM
 
 ## Changelog
 
-This project uses [semantic versioning][6].
+This project uses [semantic versioning](http://semver.org).
 
-Please use for all comments and discussions the [issues functionality on GitHub][4].
+Please use for all comments and discussions the [issues functionality on GitHub](https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt/issues).
+
+### 0.11.1 (2021-11-22)
+
+- Move demo app, update README
 
 ### 0.11.0 (2020-12-09)
 
@@ -214,12 +217,3 @@ Please use for all comments and discussions the [issues functionality on GitHub]
 ### 0.5.0 (2017-03-14)
 
 - First public release
-
-[1]: https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt/releases/latest
-[2]: https://dhtmlx.com/docs/products/dhtmlxGantt/
-[3]: http://docs.dhtmlx.com/gantt/
-[4]: https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt/issues
-[5]: https://apex.oracle.com/pls/apex/f?p=116612
-[6]: http://semver.org
-[7]: https://github.com/ogobrecht/apex-plugin-dhtmlx-gantt/wiki
-[compare]: https://docs.dhtmlx.com/gantt/desktop__editions_comparison.html
