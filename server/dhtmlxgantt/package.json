@@ -26,6 +26,5 @@
   },
   "homepage": "https://github.com/DHTMLX/gantt#readme",
   "scripts": {
-    "start": "cd backend && npm install && npm start"
   }
 }
